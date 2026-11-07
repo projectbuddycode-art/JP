@@ -1,25 +1,30 @@
 import { NextResponse } from "next/server";
-import { serverEnv } from "@/lib/env";
-import { processDueJobs } from "@/lib/jobs/processor";
-import { enqueueJob } from "@/lib/jobs/queue";
+import { authorizeCronRequest } from "@/lib/jobs/auth";
+import { runAutomationTick } from "@/lib/automation/tick";
 import { logger } from "@/lib/logger";
 
-export async function GET(request: Request) {
-  const secret = serverEnv().cronSecret;
-  const header = request.headers.get("authorization");
-  if (!secret || header !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+async function handle(request: Request) {
+  const auth = authorizeCronRequest(request);
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.message }, { status: auth.status });
   }
   try {
-    await enqueueJob({
-      type: "followup.scan",
-      payload: {},
-      idempotencyKey: `followup:${new Date().toISOString().slice(0, 13)}`,
+    const body = request.method === "POST" ? ((await request.json().catch(() => ({}))) as { action?: string; scheduleKey?: string }) : {};
+    const result = await runAutomationTick({
+      action: body.action ?? "process_due_jobs",
+      scheduleKey: body.scheduleKey,
     });
-    const results = await processDueJobs();
-    return NextResponse.json({ ok: true, results });
+    return NextResponse.json(result);
   } catch (error) {
     logger.error("cron_failed", { message: error instanceof Error ? error.message : "cron" });
     return NextResponse.json({ error: "Job processor failed" }, { status: 500 });
   }
+}
+
+export async function GET(request: Request) {
+  return handle(request);
+}
+
+export async function POST(request: Request) {
+  return handle(request);
 }

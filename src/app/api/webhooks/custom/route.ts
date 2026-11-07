@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { serverEnv } from "@/lib/env";
 import { hmacOrBearer } from "@/lib/ingest/verify";
 import { ingestNormalizedLead } from "@/lib/ingest/engine";
-import { rateLimit } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import type { NormalizedLeadEvent } from "@/lib/ingest/types";
 
 export async function POST(request: Request) {
-  const limited = rateLimit("custom-webhook", 60, 60_000);
+  const limited = await enforceRateLimit("custom-webhook", 60, 60_000);
   if (!limited.allowed) return NextResponse.json({ error: "Rate limited" }, { status: 429 });
   const raw = await request.text();
   const check = hmacOrBearer({

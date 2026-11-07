@@ -6,6 +6,14 @@ export const JOB_TYPES = [
   "metrics.sync",
   "integration.process",
   "report.generate",
+  "report.daily",
+  "report.weekly",
+  "report.monthly",
+  "payments.remind",
+  "departures.alert",
+  "documents.remind",
+  "suppliers.remind",
+  "jobs.process",
 ] as const;
 
 export type JobType = (typeof JOB_TYPES)[number];

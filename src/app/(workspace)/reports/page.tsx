@@ -5,6 +5,7 @@ import { dashboardMetrics } from "@/lib/crm/queries";
 import { KPI_DEFINITIONS } from "@/lib/kpi";
 import { formatCurrency } from "@/lib/utils";
 import { requestNow } from "@/lib/now";
+import { istDateKey } from "@/lib/reports/timezone";
 
 export const instant = false;
 
@@ -16,9 +17,9 @@ export default async function ReportsPage({
   const { supabase } = await requireActiveProfile();
   const now = await requestNow();
   const { period } = await searchParams;
-  const days = period === "day" ? 1 : period === "week" ? 7 : period === "month" ? 30 : 90;
-  const from = new Date(now.getTime() - days * 86_400_000).toISOString().slice(0, 10);
-  const to = now.toISOString().slice(0, 10);
+  const span = period === "day" ? 0 : period === "week" ? 6 : period === "month" ? 29 : 89;
+  const to = istDateKey(now);
+  const from = istDateKey(new Date(now.getTime() - span * 86_400_000));
   const metrics = await dashboardMetrics(supabase, from, to, now);
   const byStage = new Map<string, number>();
   const bySource = new Map<string, number>();
@@ -32,7 +33,7 @@ export default async function ReportsPage({
   }
   return (
     <div>
-      <PageHeader title="Reports & analytics" description={`${days}-day window, Asia/Kolkata. ${KPI_DEFINITIONS.leadToBookingConversion} Cash collected is ${formatCurrency(metrics.recordedRevenue)}; booking value is ${formatCurrency(metrics.bookingValue)}.`} />
+      <PageHeader title="Reports & analytics" description={`IST window ${from} → ${to}. ${KPI_DEFINITIONS.leadToBookingConversion} Cash collected is ${formatCurrency(metrics.recordedRevenue)}; booking value (not cash) is ${formatCurrency(metrics.bookingValue)}; outstanding is ${formatCurrency(metrics.outstandingBalance)}.`} />
       <div className="mb-6 flex flex-wrap gap-2 text-sm">
         <Link className="rounded-md border border-line px-3 py-2" href="/reports?period=day">Daily</Link>
         <Link className="rounded-md border border-line px-3 py-2" href="/reports?period=week">Weekly</Link>

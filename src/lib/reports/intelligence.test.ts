@@ -24,6 +24,12 @@ describe("reporting intelligence", () => {
     expect(rows.map((item) => item.id)).toEqual(["a"]);
   });
 
+  it("uses Asia/Kolkata calendar dates, not UTC midnight", () => {
+    const afterIstMidnight = lead("late", "2026-11-07T18:40:00.000Z");
+    const rows = buildLeadRegister([afterIstMidnight], "2026-11-07", "2026-11-07");
+    expect(rows.map((item) => item.id)).toEqual([]);
+  });
+
   it("does not treat cancelled bookings as confirmed revenue", () => {
     const snap = managementSnapshot(
       [lead("a", "2026-11-07T04:00:00.000Z")],

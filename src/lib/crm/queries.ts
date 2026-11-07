@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { stageProbability } from "@/lib/kpi";
+import { inIstRange, istDateKey } from "@/lib/reports/timezone";
 
 export async function dashboardMetrics(
   supabase: SupabaseClient,
@@ -16,19 +17,19 @@ export async function dashboardMetrics(
       supabase.from("lead_stages").select("*"),
     ]);
 
-  const inRange = (value: string | null) => {
-    if (!value) return false;
-    return value >= from && value <= `${to}T23:59:59`;
-  };
-  const today = now.toISOString().slice(0, 10);
-  const weekStart = new Date(now.getTime() - 7 * 86_400_000).toISOString().slice(0, 10);
+  const inRange = (value: string | null) => inIstRange(value, from, to);
+  const today = istDateKey(now);
+  const weekStart = istDateKey(new Date(now.getTime() - 6 * 86_400_000));
 
-  const newLeads = (leads ?? []).filter((lead) => inRange(lead.created_at));
-  const newLeadsToday = (leads ?? []).filter((lead) => (lead.received_at || lead.created_at || "").slice(0, 10) === today);
-  const newLeadsWeek = (leads ?? []).filter((lead) => (lead.received_at || lead.created_at || "").slice(0, 10) >= weekStart);
+  const newLeads = (leads ?? []).filter((lead) => inRange(lead.received_at || lead.created_at));
+  const newLeadsToday = (leads ?? []).filter((lead) => istDateKey(new Date(lead.received_at || lead.created_at || now.toISOString())) === today);
+  const newLeadsWeek = (leads ?? []).filter((lead) => {
+    const key = istDateKey(new Date(lead.received_at || lead.created_at || now.toISOString()));
+    return key >= weekStart && key <= today;
+  });
   const qualified = (leads ?? []).filter((lead) => (lead.lead_stages?.probability ?? 0) >= 0.25);
   const followUpsDueToday = (tasks ?? []).filter(
-    (task) => task.type === "follow_up" && task.due_at && task.due_at.slice(0, 10) === today,
+    (task) => task.type === "follow_up" && task.due_at && istDateKey(new Date(task.due_at)) === today,
   );
   const overdue = (tasks ?? []).filter(
     (task) => task.type === "follow_up" && task.due_at && task.due_at < new Date().toISOString(),

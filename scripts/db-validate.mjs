@@ -70,6 +70,10 @@ const required = [
   "webhook_subscriptions",
   "provider_sync_cursors",
   "operations_manager",
+  "automation_schedules",
+  "rate_limit_buckets",
+  "hit_rate_limit",
+  "can_view_financial_records",
 ];
 
 const missing = required.filter((item) => !sql.toLowerCase().includes(item.toLowerCase()));

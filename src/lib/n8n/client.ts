@@ -40,6 +40,19 @@ export async function listN8nWorkflows() {
   return { workflows: json.data ?? [], error: null };
 }
 
+export async function listN8nExecutions(limit = 10) {
+  const { baseUrl, apiKey, configured } = n8nConfig();
+  if (!configured || !baseUrl || !apiKey) {
+    return { executions: [], error: "n8n is not connected" };
+  }
+  const response = await fetch(`${baseUrl}/api/v1/executions?limit=${limit}`, {
+    headers: { "X-N8N-API-KEY": apiKey },
+  });
+  if (!response.ok) return { executions: [], error: `n8n responded ${response.status}` };
+  const json = (await response.json()) as { data?: unknown[] };
+  return { executions: json.data ?? [], error: null };
+}
+
 export async function setN8nWorkflowActive(id: string, active: boolean) {
   const { baseUrl, apiKey, configured } = n8nConfig();
   if (!configured || !baseUrl || !apiKey) {

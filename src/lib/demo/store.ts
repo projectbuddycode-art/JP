@@ -109,6 +109,7 @@ export function createDemoStore(email: string) {
     automation_executions: [
       { id: "e1", workflow_id: "w1", trigger_type: "lead_created", status: "succeeded", dry_run: true, started_at: iso(-2) },
     ],
+    automation_schedules: [],
     jobs: [
       { id: "j1", type: "social.publish", status: "pending", run_at: iso(1), last_error: null },
     ],

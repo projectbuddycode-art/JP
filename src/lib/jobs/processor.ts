@@ -6,6 +6,13 @@ import { publishScheduledPost } from "@/lib/social/publish";
 import { sendQueuedWhatsApp } from "@/lib/whatsapp/client";
 import { scanFollowUps } from "@/lib/crm/followups";
 import { processIntegrationEvent } from "@/lib/integrations/process";
+import {
+  alertUpcomingDepartures,
+  generatePeriodReport,
+  remindMissingDocuments,
+  remindOutstandingPayments,
+  remindUnconfirmedSuppliers,
+} from "@/lib/automation/scans";
 
 export async function processDueJobs() {
   const jobs = await claimJobs();
@@ -66,18 +73,24 @@ async function runJob(
       return scanFollowUps();
     case "integration.process":
       return processIntegrationEvent(String(payload.eventId));
-    case "report.generate": {
-      const admin = createAdminClient();
-      await admin.from("report_runs").insert({
-        status: "generated",
-        finished_at: new Date().toISOString(),
-      });
-      return {
-        generated: true,
-        delivered: false,
-        reason: "Report file was generated. Delivery stays pending until an email or WhatsApp provider confirms send.",
-      };
-    }
+    case "report.daily":
+      return generatePeriodReport("daily");
+    case "report.weekly":
+      return generatePeriodReport("weekly");
+    case "report.monthly":
+      return generatePeriodReport("monthly");
+    case "payments.remind":
+      return remindOutstandingPayments();
+    case "departures.alert":
+      return alertUpcomingDepartures();
+    case "documents.remind":
+      return remindMissingDocuments();
+    case "suppliers.remind":
+      return remindUnconfirmedSuppliers();
+    case "jobs.process":
+      return { skipped: true, reason: "Queue processing is handled by the authenticated tick endpoint" };
+    case "report.generate":
+      return generatePeriodReport("daily");
     default:
       throw new Error(`Unsupported job type: ${type}`);
   }

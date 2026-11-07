@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireOwnerProfile } from "@/lib/auth/session";
 import { listN8nWorkflows, setN8nWorkflowActive, testN8nConnection } from "@/lib/n8n/client";
 import { writeAudit } from "@/lib/audit";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function testN8nAction() {
   const { profile } = await requireOwnerProfile();
@@ -15,6 +16,15 @@ export async function testN8nAction() {
     newValue: result.ok ? "ok" : result.error,
     source: "user",
   });
+  const admin = createAdminClient();
+  await admin
+    .from("integration_connections")
+    .update({
+      status: result.ok ? "connected" : "error",
+      last_success_at: result.ok ? new Date().toISOString() : null,
+      last_error: result.ok ? null : result.error,
+    })
+    .eq("provider", "n8n");
   if (!result.ok) throw new Error(result.error ?? "n8n test failed");
   revalidatePath("/automation");
 }

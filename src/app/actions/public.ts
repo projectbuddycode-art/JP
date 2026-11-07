@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { rateLimit } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import { ingestLead } from "@/lib/integrations/process";
 import { tryCreateAdminClient } from "@/lib/supabase/admin";
 import { isPubliclyListed } from "@/lib/site/visibility";
@@ -12,7 +12,7 @@ export type EnquiryState = { error: string | null; ok: boolean };
 export async function submitEnquiryAction(_state: EnquiryState, formData: FormData): Promise<EnquiryState> {
   const hdrs = await headers();
   const ip = hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() || "public-form";
-  const limited = rateLimit(`enquiry:${ip}`, 8, 10 * 60_000);
+  const limited = await enforceRateLimit(`enquiry:${ip}`, 8, 10 * 60_000);
   if (!limited.allowed) return { error: "Too many submissions. Please try later.", ok: false };
   const parsed = enquirySchema.safeParse({
     full_name: formData.get("full_name"),
@@ -126,7 +126,7 @@ export async function subscribeNewsletterAction(
     consent: formData.get("consent"),
   });
   if (!parsed.success) return { error: "Enter an email and consent to subscribe.", ok: false };
-  const limited = rateLimit(`newsletter:${parsed.data.email}`, 4, 10 * 60_000);
+  const limited = await enforceRateLimit(`newsletter:${parsed.data.email}`, 4, 10 * 60_000);
   if (!limited.allowed) return { error: "Too many attempts. Try later.", ok: false };
   const admin = tryCreateAdminClient();
   if (!admin) return { error: "Could not store the subscription.", ok: false };

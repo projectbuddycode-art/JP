@@ -25,6 +25,7 @@ function isPublicPath(path: string) {
     path.startsWith("/robots") ||
     path.startsWith("/api/webhooks") ||
     path.startsWith("/api/cron") ||
+    path.startsWith("/api/automation") ||
     path.startsWith("/api/public") ||
     path.startsWith("/api/health")
   );

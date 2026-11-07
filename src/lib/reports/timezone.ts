@@ -1,4 +1,26 @@
 export const DEFAULT_TZ = "Asia/Kolkata";
+const IST_OFFSET_MS = (5 * 60 + 30) * 60 * 1000;
+
+export function toIstParts(date: Date) {
+  const ist = new Date(date.getTime() + IST_OFFSET_MS);
+  return {
+    year: ist.getUTCFullYear(),
+    month: ist.getUTCMonth() + 1,
+    day: ist.getUTCDate(),
+    hour: ist.getUTCHours(),
+    minute: ist.getUTCMinutes(),
+    weekday: ist.getUTCDay(),
+  };
+}
+
+export function fromIstWall(year: number, month: number, day: number, hour: number, minute: number) {
+  return new Date(Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET_MS);
+}
+
+export function istDateKey(date = new Date()) {
+  const parts = toIstParts(date);
+  return `${parts.year}-${String(parts.month).padStart(2, "0")}-${String(parts.day).padStart(2, "0")}`;
+}
 
 export function formatIst(value: string | Date | null | undefined) {
   if (!value) return "—";
@@ -23,6 +45,12 @@ export function istHour(value: string | Date) {
     hourCycle: "h23",
   }).formatToParts(date);
   return Number(parts.find((part) => part.type === "hour")?.value ?? "0");
+}
+
+export function inIstRange(iso: string | null | undefined, from: string, to: string) {
+  if (!iso) return false;
+  const key = istDateKey(new Date(iso));
+  return key >= from && key <= to;
 }
 
 export function hourBucket(hour: number) {

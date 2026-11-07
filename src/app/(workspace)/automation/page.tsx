@@ -4,7 +4,8 @@ import { Badge, Button, Card, Input, Label, PageHeader, Textarea } from "@/compo
 import { requireActiveProfile } from "@/lib/auth/session";
 import { ACTION_TYPES, TRIGGER_TYPES } from "@/lib/automation/schema";
 import { formatDateTime } from "@/lib/utils";
-import { listN8nWorkflows, n8nConfig, testN8nConnection } from "@/lib/n8n/client";
+import { listN8nExecutions, listN8nWorkflows, n8nConfig, testN8nConnection } from "@/lib/n8n/client";
+import { formatIst } from "@/lib/reports/timezone";
 import { profileRole } from "@/lib/auth/permissions";
 
 export const instant = false;
@@ -38,12 +39,20 @@ export default async function AutomationPage() {
   const n8n = n8nConfig();
   const n8nStatus = n8n.configured ? await testN8nConnection() : { ok: false, error: "Not configured" };
   const remote = n8nStatus.ok ? await listN8nWorkflows() : { workflows: [] as unknown[], error: n8nStatus.error };
+  const remoteExec = n8nStatus.ok ? await listN8nExecutions(8) : { executions: [] as unknown[], error: n8nStatus.error };
+  const { data: schedules } = await supabase.from("automation_schedules").select("*").order("key");
+  const failedJobs = (jobs ?? []).filter((item) => item.status === "failed");
+  const now = new Date();
+  const overdueCutoff = new Date(now.getTime() - 20 * 60_000).toISOString();
+  const overdueSchedules = (schedules ?? []).filter(
+    (item) => item.enabled && item.next_run_at && item.next_run_at < overdueCutoff,
+  );
 
   return (
     <div>
       <PageHeader
         title="Automation Center"
-        description="Configure, pause, test, and inspect workflows inside the CRM. n8n is optional and never required for daily control."
+        description="n8n is the scheduled engine (Asia/Kolkata). Incoming website, Meta, WhatsApp and Google Ads leads still save to Supabase if n8n is down."
       />
       <div className="grid gap-4 md:grid-cols-4">
         <Card><p className="text-sm text-muted">Active</p><p className="font-serif text-3xl">{(workflows ?? []).filter((item) => item.enabled).length}</p></Card>
@@ -54,8 +63,15 @@ export default async function AutomationPage() {
       <Card className="mt-6">
         <h2 className="font-serif text-xl">n8n connection</h2>
         <p className="mt-2 text-sm text-muted">
-          Credentials stay on the server. Status: {n8nStatus.ok ? "connected" : n8nStatus.error}. The n8n editor is not embedded.
+          Credentials stay on the server. Status: {n8nStatus.ok ? "connected" : n8nStatus.error}.
+          {n8nStatus.ok ? " Workflow list and executions below are live API results." : " Scheduled ticks will not run until N8N_BASE_URL, N8N_API_KEY, and CRON_SECRET are set and a connection test succeeds. Lead capture does not wait."}
         </p>
+        {overdueSchedules.length ? (
+          <p className="mt-2 text-sm text-danger">{overdueSchedules.length} schedule(s) are overdue — n8n may be down or the workflow is inactive.</p>
+        ) : null}
+        {failedJobs.length ? (
+          <p className="mt-2 text-sm text-danger">{failedJobs.length} job(s) exhausted retries. Inspect the jobs table; do not treat them as successful.</p>
+        ) : null}
         {owner ? (
           <form action={testN8nAction} className="mt-3">
             <Button variant="secondary" type="submit">Test n8n API</Button>
@@ -75,8 +91,44 @@ export default async function AutomationPage() {
             ))}
           </ul>
         ) : (
-          <p className="mt-3 text-sm text-muted">No remote n8n workflows loaded. Set N8N_BASE_URL and N8N_API_KEY to connect.</p>
+          <p className="mt-3 text-sm text-muted">No remote n8n workflows loaded. Import templates from n8n/workflows after connecting the API.</p>
         )}
+        {(remoteExec.executions as Array<{ id?: string; finished?: boolean; stoppedAt?: string; workflowData?: { name?: string } }>).length ? (
+          <ul className="mt-4 space-y-1 text-xs text-muted">
+            {(remoteExec.executions as Array<{ id: string; finished?: boolean; stoppedAt?: string; workflowData?: { name?: string } }>).map((item) => (
+              <li key={item.id}>{item.workflowData?.name || "workflow"} · {item.finished ? "finished" : "running"} · {item.stoppedAt || "in progress"}</li>
+            ))}
+          </ul>
+        ) : null}
+      </Card>
+      <Card className="mt-6">
+        <h2 className="font-serif text-xl">Postgres schedules</h2>
+        <p className="mt-2 text-sm text-muted">Durable source of truth. n8n only triggers authenticated ticks; jobs, retries, and idempotency keys live here.</p>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="text-muted">
+              <tr>
+                <th className="py-2 pr-3">Schedule</th>
+                <th className="py-2 pr-3">Cadence (IST)</th>
+                <th className="py-2 pr-3">Next run</th>
+                <th className="py-2 pr-3">Last success</th>
+                <th className="py-2">Last error</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(schedules ?? []).map((item) => (
+                <tr key={item.key} className="border-t border-line">
+                  <td className="py-2 pr-3">{item.name}</td>
+                  <td className="py-2 pr-3">{item.n8n_cron}</td>
+                  <td className="py-2 pr-3">{formatIst(item.next_run_at)}</td>
+                  <td className="py-2 pr-3">{formatIst(item.last_success_at)}</td>
+                  <td className="py-2">{item.last_error || (item.enabled ? "—" : "disabled")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {!(schedules ?? []).length ? <p className="mt-3 text-sm text-muted">Apply migration 0010_n8n_schedules.sql to create schedule rows.</p> : null}
       </Card>
       <Card className="mt-6">
         <h2 className="font-serif text-xl">Suggested travel workflows</h2>
@@ -104,7 +156,7 @@ export default async function AutomationPage() {
           <li>Scheduled social post → authorized Graph publish.</li>
           <li>Publishing failure → notify owner.</li>
         </ol>
-        <p className="mt-3 text-xs text-muted">CRM workflows run locally even if n8n is down. n8n only receives events when N8N_INGEST_WEBHOOK_URL is set.</p>
+        <p className="mt-3 text-xs text-muted">Event-driven CRM workflows still enqueue Postgres jobs. n8n must tick /api/automation/tick to process the queue. Optional N8N_INGEST_WEBHOOK_URL is outbound only and must not block ingest.</p>
       </Card>
       {owner ? (
         <Card className="mt-6">

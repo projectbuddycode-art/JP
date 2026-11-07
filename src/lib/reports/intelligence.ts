@@ -1,4 +1,4 @@
-import { hourBucket, istHour } from "@/lib/reports/timezone";
+import { hourBucket, inIstRange, istHour } from "@/lib/reports/timezone";
 
 export const REPORT_DEFINITIONS = {
   leadsReceived:
@@ -51,7 +51,7 @@ export function receivedAt(lead: LeadRow) {
 }
 
 export function inRange(iso: string, from: string, to: string) {
-  return iso >= from && iso <= `${to}T23:59:59.999Z`;
+  return inIstRange(iso, from, to);
 }
 
 export function buildLeadRegister(leads: LeadRow[], from: string, to: string) {

@@ -43,7 +43,7 @@ Invited team members become `active` when their email exists in `team_invites`. 
 
 ## Jobs
 
-`GET /api/cron/jobs` with `Authorization: Bearer $CRON_SECRET` claims due jobs (follow-up scan, social publish, WhatsApp send, automation). Vercel cron is defined in `vercel.json`.
+n8n is the scheduled engine. It posts to `/api/automation/tick` with `Authorization: Bearer $CRON_SECRET`. Jobs, retries, and idempotency keys live in Postgres. Vercel Hobby has no every-minute cron (`vercel.json` is empty of crons). See `docs/N8N.md`.
 
 ## Tests
 

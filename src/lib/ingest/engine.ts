@@ -297,6 +297,7 @@ export async function ingestNormalizedLead(event: NormalizedLeadEvent): Promise<
       body: JSON.stringify({ leadId: lead.id, provider: event.provider, source_type: event.source_type }),
     }).catch(() => undefined);
   }
+  // Lead row is already committed. A failed or missing n8n webhook must not roll back ingest.
 
   return {
     duplicate: false,

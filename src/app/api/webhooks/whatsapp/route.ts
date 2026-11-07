@@ -4,6 +4,7 @@ import { verifyHmacSha256 } from "@/lib/integrations/google-ads";
 import { recordInboundWhatsApp } from "@/lib/whatsapp/client";
 import { tryCreateAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -17,6 +18,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const limited = await enforceRateLimit("whatsapp-webhook", 120, 60_000);
+  if (!limited.allowed) return NextResponse.json({ error: "Rate limited" }, { status: 429 });
   const raw = await request.text();
   const signature = request.headers.get("x-hub-signature-256") ?? "";
   const secret = serverEnv().whatsappAppSecret;

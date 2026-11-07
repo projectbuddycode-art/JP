@@ -14,7 +14,7 @@ Run additive migrations `0008_ingest.sql` (and earlier files) against the existi
 
 ## Environment (server-only unless `NEXT_PUBLIC_`)
 
-See `.env.example`. Vercel: set the same keys on Production/Preview. Cron: `CRON_SECRET` for `/api/cron/jobs`.
+See `.env.example`. Vercel: set the same keys on Production/Preview. `CRON_SECRET` authenticates n8n ticks to `/api/automation/tick`. Do not add a high-frequency Vercel Cron.
 
 ## Provider matrix
 

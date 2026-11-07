@@ -30,4 +30,4 @@ Invited teammates are inserted into `team_invites`. Uninvited sign-ups remain `i
 
 ## Jobs
 
-Hit `GET /api/cron/jobs` with `Authorization: Bearer $CRON_SECRET` or configure Vercel Cron (`vercel.json` runs every minute).
+Scheduled work is triggered by n8n, not Vercel Cron. See `docs/N8N.md`. Locally you can `POST /api/automation/tick` with `Authorization: Bearer $CRON_SECRET`.

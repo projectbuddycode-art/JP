@@ -4,8 +4,11 @@ import { ingestLead } from "@/lib/integrations/process";
 import { serverEnv } from "@/lib/env";
 import { tryCreateAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
+  const limited = await enforceRateLimit("google-ads-webhook", 60, 60_000);
+  if (!limited.allowed) return NextResponse.json({ error: "Rate limited" }, { status: 429 });
   const payload = (await request.json()) as GoogleAdsLeadPayload;
   const envKey = serverEnv().googleAdsWebhookKey;
   const admin = tryCreateAdminClient();

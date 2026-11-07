@@ -197,7 +197,7 @@ export const PROVIDER_CATALOG: ProviderCapabilityDoc[] = [
   {
     id: "n8n",
     title: "n8n",
-    captures: "Workflow list/status via n8n Public API. Optional outbound ingest webhook.",
+    captures: "Scheduled CRM ticks (reports, reminders, due jobs) plus optional outbound ingest webhook.",
     cannotCapture: "An embedded editor. Credentials never go to the browser.",
     accountType: "Self-hosted or n8n Cloud",
     developerAccess: "API key with workflow scope",
@@ -206,7 +206,7 @@ export const PROVIDER_CATALOG: ProviderCapabilityDoc[] = [
     webhookPath: null,
     setup: ["Set server env", "Test from Automation Center", "CRM remains source of truth"],
     testMethod: "Test n8n API. Connected only when /api/v1/workflows succeeds.",
-    limitations: "Local CRM automations still run if n8n is down.",
+    limitations: "If n8n is down, scheduled ticks pause and jobs remain pending in Postgres. Website/Meta/WhatsApp/Google Ads leads still save immediately.",
     recovery: "Inspect automation_executions and n8n execution logs separately.",
     capabilities: ["webhooks"],
   },

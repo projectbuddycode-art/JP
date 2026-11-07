@@ -25,7 +25,7 @@ Never expose service-role, OAuth client secrets, or provider tokens to the brows
 2. Build command: `npm run build`
 3. Set env vars.
 4. Confirm HTTPS.
-5. Confirm cron: `GET /api/cron/jobs` every minute with the bearer secret. Do not rely on in-memory timers; Vercel invocations are not a always-on worker.
+5. Do **not** add a Vercel Cron on the Hobby plan for job processing. Import n8n workflows from `n8n/workflows/` (see `docs/N8N.md`). n8n calls `POST /api/automation/tick` with `Authorization: Bearer $CRON_SECRET`. `vercel.json` must stay Hobby-compatible (`npm run hobby:check`).
 6. Health check: `GET /api/health`.
 7. OAuth and Meta webhook URLs must use the production `NEXT_PUBLIC_APP_URL`, never localhost.
 
