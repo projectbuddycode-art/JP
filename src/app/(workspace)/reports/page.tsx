@@ -8,12 +8,18 @@ import { requestNow } from "@/lib/now";
 
 export const instant = false;
 
-export default async function ReportsPage() {
+export default async function ReportsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ period?: string }>;
+}) {
   const { supabase } = await requireActiveProfile();
   const now = await requestNow();
-  const from = new Date(now.getTime() - 90 * 86_400_000).toISOString().slice(0, 10);
+  const { period } = await searchParams;
+  const days = period === "day" ? 1 : period === "week" ? 7 : period === "month" ? 30 : 90;
+  const from = new Date(now.getTime() - days * 86_400_000).toISOString().slice(0, 10);
   const to = now.toISOString().slice(0, 10);
-  const metrics = await dashboardMetrics(supabase, from, to);
+  const metrics = await dashboardMetrics(supabase, from, to, now);
   const byStage = new Map<string, number>();
   const bySource = new Map<string, number>();
   const byDestination = new Map<string, number>();
@@ -26,8 +32,11 @@ export default async function ReportsPage() {
   }
   return (
     <div>
-      <PageHeader title="Business intelligence" description={`Last 90 days, Asia/Kolkata. ${KPI_DEFINITIONS.leadToBookingConversion}`} />
+      <PageHeader title="Reports & analytics" description={`${days}-day window, Asia/Kolkata. ${KPI_DEFINITIONS.leadToBookingConversion} Cash collected is ${formatCurrency(metrics.recordedRevenue)}; booking value is ${formatCurrency(metrics.bookingValue)}.`} />
       <div className="mb-6 flex flex-wrap gap-2 text-sm">
+        <Link className="rounded-md border border-line px-3 py-2" href="/reports?period=day">Daily</Link>
+        <Link className="rounded-md border border-line px-3 py-2" href="/reports?period=week">Weekly</Link>
+        <Link className="rounded-md border border-line px-3 py-2" href="/reports?period=month">Monthly</Link>
         <Link className="rounded-md border border-line px-3 py-2" href="/reports/register">Lead register</Link>
         <Link className="rounded-md border border-line px-3 py-2" href="/partners">Partner performance</Link>
         <Link className="rounded-md border border-line px-3 py-2" href="/departures">Departures</Link>

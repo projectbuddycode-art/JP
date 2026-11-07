@@ -120,7 +120,33 @@ export async function addNoteAction(formData: FormData) {
     type: "note",
     body,
   });
-  await supabase.from("leads").update({ last_interaction_at: new Date().toISOString() }).eq("id", leadId);
+  const stamp = new Date().toISOString();
+  const { data: current } = await supabase.from("leads").select("first_response_at").eq("id", leadId).maybeSingle();
+  await supabase.from("leads").update({
+    last_interaction_at: stamp,
+    first_response_at: current?.first_response_at || stamp,
+  }).eq("id", leadId);
+  revalidatePath(`/leads/${leadId}`);
+}
+
+export async function logCallAction(formData: FormData) {
+  const { supabase, profile } = await requireActiveProfile();
+  const leadId = String(formData.get("lead_id"));
+  const body = String(formData.get("body") ?? "").trim();
+  if (!body) throw new Error("Call notes are required");
+  await supabase.from("activities").insert({
+    lead_id: leadId,
+    actor_id: profile.id,
+    type: "call",
+    body,
+  });
+  const stamp = new Date().toISOString();
+  const { data: current } = await supabase.from("leads").select("first_response_at").eq("id", leadId).maybeSingle();
+  await supabase.from("leads").update({
+    last_interaction_at: stamp,
+    first_response_at: current?.first_response_at || stamp,
+  }).eq("id", leadId);
+  await writeAudit({ actor: profile, action: "call_logged", entityType: "leads", entityId: leadId, newValue: body.slice(0, 120) });
   revalidatePath(`/leads/${leadId}`);
 }
 

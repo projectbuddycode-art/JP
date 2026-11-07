@@ -77,6 +77,15 @@ export default async function DeparturesPage() {
         </table>
         {!(departures ?? []).length ? <p className="px-3 py-6 text-sm text-muted">No dated departures yet. Packages remain on the website independently.</p> : null}
       </div>
+      <div className="mt-6 grid gap-3 md:grid-cols-3">
+        {(departures ?? []).map((item) => (
+          <Link key={`cal-${item.id}`} href={`/departures/${item.id}`} className="rounded-xl border border-line p-4">
+            <p className="text-xs uppercase text-muted">{item.start_date?.slice(0, 7)}</p>
+            <p className="font-medium">{item.name}</p>
+            <p className="text-sm text-muted">{item.status} · {item.destination}</p>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

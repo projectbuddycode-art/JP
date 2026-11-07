@@ -1,4 +1,4 @@
-export const ROLES = ["owner", "admin", "partner", "sales", "viewer", "trip_leader", "finance"] as const;
+export const ROLES = ["owner", "admin", "partner", "sales", "viewer", "trip_leader", "finance", "operations_manager"] as const;
 export type WorkspaceRole = (typeof ROLES)[number];
 
 export const PERMISSIONS = [
@@ -35,6 +35,15 @@ export const ROLE_PERMISSIONS: Record<WorkspaceRole, Permission[]> = {
   viewer: ["leads.view", "leads.view_own"],
   trip_leader: ["leads.view", "leads.view_own", "bookings.manage", "operations.manage"],
   finance: ["leads.view", "revenue.view", "reports.financial", "bookings.manage", "records.export"],
+  operations_manager: [
+    "leads.view",
+    "leads.view_all",
+    "leads.edit",
+    "bookings.manage",
+    "operations.manage",
+    "packages.manage",
+    "audit.view",
+  ],
 };
 
 export function normalizeRole(role: string | null | undefined): WorkspaceRole {
@@ -45,7 +54,8 @@ export function normalizeRole(role: string | null | undefined): WorkspaceRole {
     role === "sales" ||
     role === "viewer" ||
     role === "trip_leader" ||
-    role === "finance"
+    role === "finance" ||
+    role === "operations_manager"
   ) {
     return role;
   }
@@ -79,16 +89,17 @@ export function navForRole(role: string | null | undefined): NavItem[] {
   const items: Array<NavItem & { show: boolean }> = [
     { href: "/overview", label: "Overview", group: "main", show: true },
     { href: "/sales", label: "Enquiries & Sales", group: "main", show: hasPermission(r, "leads.view") },
-    { href: "/departures", label: "Trips & Departures", group: "main", show: hasPermission(r, "bookings.manage") || r === "trip_leader" || r === "admin" || r === "owner" },
+    { href: "/departures", label: "Trips & Departures", group: "main", show: hasPermission(r, "bookings.manage") || r === "trip_leader" || r === "admin" || r === "owner" || r === "operations_manager" },
     { href: "/travellers", label: "Travellers", group: "main", show: hasPermission(r, "bookings.manage") || r === "trip_leader" },
     { href: "/bookings", label: "Bookings & Payments", group: "main", show: hasPermission(r, "bookings.manage") || hasPermission(r, "revenue.view") },
-    { href: "/operations", label: "Operations & Suppliers", group: "main", show: r === "owner" || r === "admin" || r === "trip_leader" || r === "finance" },
+    { href: "/operations", label: "Operations & Suppliers", group: "main", show: r === "owner" || r === "admin" || r === "trip_leader" || r === "finance" || r === "operations_manager" },
     { href: "/website", label: "Website & Marketing", group: "main", show: hasPermission(r, "content.publish") || r === "owner" || r === "admin" },
-    { href: "/reports", label: "Reports", group: "admin", show: r === "owner" || r === "admin" || r === "finance" || r === "viewer" },
+    { href: "/reports", label: "Reports & Analytics", group: "admin", show: r === "owner" || r === "admin" || r === "finance" || r === "viewer" || r === "operations_manager" },
     { href: "/team", label: "Team & Partners", group: "admin", show: hasPermission(r, "users.manage") },
     { href: "/audit", label: "Audit History", group: "admin", show: hasPermission(r, "audit.view") },
     { href: "/automation", label: "Automation Center", group: "admin", show: hasPermission(r, "automations.manage") },
     { href: "/integrations", label: "Integrations", group: "admin", show: hasPermission(r, "integrations.manage") },
+    { href: "/approvals", label: "Approvals", group: "admin", show: r === "owner" || r === "admin" || r === "finance" || r === "operations_manager" },
     { href: "/settings", label: "Settings", group: "admin", show: true },
   ];
   return items.filter((item) => item.show).map(({ show, ...item }) => {

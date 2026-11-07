@@ -8,7 +8,7 @@ export const instant = false;
 
 export default async function ApprovalsPage() {
   const { supabase, profile } = await requireActiveProfile();
-  if (!["owner", "admin"].includes(profileRole(profile))) redirect("/overview");
+  if (!["owner", "admin", "finance", "operations_manager"].includes(profileRole(profile))) redirect("/overview");
   const { data: items } = await supabase.from("approvals").select("*").order("created_at", { ascending: false }).limit(50);
   return (
     <div>

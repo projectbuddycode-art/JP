@@ -29,6 +29,7 @@ export default async function SalesHubPage() {
         <Link className="rounded-md border border-line px-3 py-2" href="/contacts">Contacts</Link>
         <Link className="rounded-md border border-line px-3 py-2" href="/inbox">WhatsApp inbox</Link>
         <Link className="rounded-md border border-line px-3 py-2" href="/packages">Package catalogue</Link>
+        <Link className="rounded-md border border-line px-3 py-2" href="/sales/retention">Repeat customers</Link>
       </div>
       <Card className="mt-6">
         <h2 className="font-serif text-xl">Sales stages</h2>

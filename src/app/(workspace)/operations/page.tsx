@@ -9,7 +9,7 @@ export const instant = false;
 
 export default async function OperationsPage() {
   const { supabase, profile } = await requireActiveProfile();
-  if (!["owner", "admin", "trip_leader", "finance"].includes(profileRole(profile))) redirect("/overview");
+  if (!["owner", "admin", "trip_leader", "finance", "operations_manager"].includes(profileRole(profile))) redirect("/overview");
   const { data: suppliers } = await supabase.from("suppliers").select("*").limit(50);
   const { data: trips } = await supabase.from("trip_operations").select("*").limit(50);
   const { data: upcoming } = await supabase.from("departures").select("id, name, start_date, status").neq("status", "cancelled").order("start_date").limit(20);

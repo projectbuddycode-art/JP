@@ -1,6 +1,6 @@
 import { hasPermission, normalizeRole, type Permission, type WorkspaceRole } from "@/lib/auth/rbac";
 
-export type UserRole = "owner" | "member" | "admin" | "partner" | "sales" | "viewer" | "trip_leader" | "finance";
+export type UserRole = "owner" | "member" | "admin" | "partner" | "sales" | "viewer" | "trip_leader" | "finance" | "operations_manager";
 export type ProfileStatus = "active" | "invited" | "disabled";
 
 export type SessionProfile = {

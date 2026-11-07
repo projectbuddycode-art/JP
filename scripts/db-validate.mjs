@@ -69,6 +69,7 @@ const required = [
   "lead_field_values",
   "webhook_subscriptions",
   "provider_sync_cursors",
+  "operations_manager",
 ];
 
 const missing = required.filter((item) => !sql.toLowerCase().includes(item.toLowerCase()));

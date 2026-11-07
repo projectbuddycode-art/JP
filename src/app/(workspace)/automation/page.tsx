@@ -89,10 +89,20 @@ export default async function AutomationPage() {
           <li>LinkedIn lead → map fields → ingest (blocked until Lead Sync approval).</li>
           <li>TikTok lead → validate → ingest (blocked without app credentials).</li>
           <li>No first response within SLA → alert assigned partner.</li>
-          <li>Trip enquiry destination → package suggestion task.</li>
-          <li>Booking confirmed → traveller and departure records.</li>
-          <li>Daily lead report for authorized recipients.</li>
-          <li>Scheduled social post → authorized Graph publish → store result.</li>
+          <li>Proposal sent → follow-up task.</li>
+          <li>Booking confirmed → traveller records.</li>
+          <li>Booking confirmed → payment schedule task.</li>
+          <li>Payment due → staff reminder.</li>
+          <li>Departure approaching → operations notification.</li>
+          <li>Missing documents → reminder.</li>
+          <li>Hotel not confirmed → alert.</li>
+          <li>Vehicle not assigned → alert.</li>
+          <li>Trip completed → expense reconciliation.</li>
+          <li>Trip completed → feedback request where consent exists.</li>
+          <li>Daily management report.</li>
+          <li>Weekly partner report.</li>
+          <li>Scheduled social post → authorized Graph publish.</li>
+          <li>Publishing failure → notify owner.</li>
         </ol>
         <p className="mt-3 text-xs text-muted">CRM workflows run locally even if n8n is down. n8n only receives events when N8N_INGEST_WEBHOOK_URL is set.</p>
       </Card>

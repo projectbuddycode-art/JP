@@ -5,6 +5,7 @@ export async function dashboardMetrics(
   supabase: SupabaseClient,
   from: string,
   to: string,
+  now = new Date(),
 ) {
   const [{ data: leads }, { data: tasks }, { data: proposals }, { data: bookings }, { data: stages }] =
     await Promise.all([
@@ -19,14 +20,15 @@ export async function dashboardMetrics(
     if (!value) return false;
     return value >= from && value <= `${to}T23:59:59`;
   };
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  const today = start.toISOString();
+  const today = now.toISOString().slice(0, 10);
+  const weekStart = new Date(now.getTime() - 7 * 86_400_000).toISOString().slice(0, 10);
 
   const newLeads = (leads ?? []).filter((lead) => inRange(lead.created_at));
+  const newLeadsToday = (leads ?? []).filter((lead) => (lead.received_at || lead.created_at || "").slice(0, 10) === today);
+  const newLeadsWeek = (leads ?? []).filter((lead) => (lead.received_at || lead.created_at || "").slice(0, 10) >= weekStart);
   const qualified = (leads ?? []).filter((lead) => (lead.lead_stages?.probability ?? 0) >= 0.25);
   const followUpsDueToday = (tasks ?? []).filter(
-    (task) => task.type === "follow_up" && task.due_at && task.due_at.slice(0, 10) === today.slice(0, 10),
+    (task) => task.type === "follow_up" && task.due_at && task.due_at.slice(0, 10) === today,
   );
   const overdue = (tasks ?? []).filter(
     (task) => task.type === "follow_up" && task.due_at && task.due_at < new Date().toISOString(),
@@ -44,11 +46,20 @@ export async function dashboardMetrics(
       (sum, booking) => sum + Number(booking.amount_received ?? booking.amount_paid ?? 0),
       0,
     );
-  const paymentsOverdue = (bookings ?? []).filter((booking) => {
-    if (booking.booking_status === "cancelled") return false;
+  const activeBookings = (bookings ?? []).filter((booking) => booking.booking_status !== "cancelled");
+  const bookingValue = activeBookings.reduce((sum, booking) => sum + Number(booking.confirmed_amount ?? 0), 0);
+  const outstandingBalance = activeBookings.reduce((sum, booking) => {
+    const due = Number(booking.confirmed_amount ?? 0) - Number(booking.amount_received ?? booking.amount_paid ?? 0);
+    return sum + Math.max(0, due);
+  }, 0);
+  const paymentsOverdue = activeBookings.filter((booking) => {
     const due = Number(booking.confirmed_amount ?? 0) - Number(booking.amount_received ?? booking.amount_paid ?? 0);
     return due > 0 && ["confirmed", "completed"].includes(booking.booking_status);
   }).length;
+  const bySource = new Map<string, number>();
+  for (const lead of leads ?? []) {
+    bySource.set(lead.source ?? "unknown", (bySource.get(lead.source ?? "unknown") ?? 0) + 1);
+  }
   const weightedPipelineValue = (leads ?? []).reduce((sum, lead) => {
     const stage = lead.lead_stages;
     if (!stage || stage.is_lost || stage.is_won) return sum;
@@ -60,17 +71,23 @@ export async function dashboardMetrics(
 
   return {
     newLeads: newLeads.length,
+    newLeadsToday: newLeadsToday.length,
+    newLeadsWeek: newLeadsWeek.length,
     qualifiedLeads: qualified.length,
     followUpsDueToday: followUpsDueToday.length,
     overdueFollowUps: overdue.length,
     activeProposals: activeProposals.length,
     confirmedBookings: confirmed.length,
     paymentsOverdue,
+    bookingValue,
+    outstandingBalance,
     recordedRevenue,
     weightedPipelineValue,
     leadToBookingConversion: conversion,
+    sources: [...bySource.entries()],
     leads: leads ?? [],
     tasks: tasks ?? [],
     stages: stages ?? [],
+    bookings: bookings ?? [],
   };
 }

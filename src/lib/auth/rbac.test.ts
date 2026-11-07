@@ -32,5 +32,12 @@ describe("rbac", () => {
     expect(hrefs).toContain("/sales");
     expect(hrefs).not.toContain("/integrations");
     expect(hrefs).not.toContain("/team");
+    expect(hrefs).not.toContain("/approvals");
+  });
+
+  it("gives operations managers ops access without user admin", () => {
+    expect(hasPermission("operations_manager", "operations.manage")).toBe(true);
+    expect(hasPermission("operations_manager", "users.manage")).toBe(false);
+    expect(navForRole("operations_manager").some((item) => item.href === "/approvals")).toBe(true);
   });
 });

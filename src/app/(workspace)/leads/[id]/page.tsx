@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { addNoteAction, confirmBookingAction, createProposalAction, createTaskAction } from "@/app/actions/crm";
+import { addNoteAction, confirmBookingAction, createProposalAction, createTaskAction, logCallAction } from "@/app/actions/crm";
+import { scoreLead } from "@/lib/crm/score";
 import { assignLeadAction } from "@/app/actions/team";
 import { archiveLeadAction } from "@/app/actions/import";
 import { Badge, Button, Card, Input, Label, PageHeader, Textarea } from "@/components/ui";
@@ -50,6 +51,17 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
     isLost: Boolean(lead.stage?.is_lost),
     isWon: Boolean(lead.stage?.is_won),
   });
+  const scored = scoreLead({
+    hasPhone: Boolean(lead.phone_e164),
+    hasEmail: Boolean(lead.email),
+    destination: lead.destination,
+    preferredStart: lead.preferred_start,
+    travellers: lead.travellers,
+    budget: lead.budget_max,
+    source: lead.source,
+    stageProbability: lead.stage?.probability,
+    isLost: Boolean(lead.stage?.is_lost),
+  });
 
   return (
     <div>
@@ -65,6 +77,8 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
       <div className="mb-6 rounded-xl border border-line bg-accent-soft p-4">
         <p className="text-sm uppercase tracking-wide text-muted">Next best action</p>
         <p className="mt-1 font-medium">{suggestion.action}</p>
+        <p className="mt-2 text-sm">Qualification score {scored.score}/100</p>
+        <p className="text-xs text-muted">{scored.reasons.join(" · ") || "No scoring fields yet"}</p>
       </div>
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
@@ -103,6 +117,12 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             <input type="hidden" name="lead_id" value={lead.id} />
             <Textarea name="body" rows={4} required />
             <Button type="submit">Save note</Button>
+          </form>
+          <form action={logCallAction} className="mt-4 space-y-3">
+            <input type="hidden" name="lead_id" value={lead.id} />
+            <Label>Call log</Label>
+            <Textarea name="body" rows={3} required placeholder="Outcome of the call. This is not call recording." />
+            <Button type="submit" variant="secondary">Log call</Button>
           </form>
           <form action={createTaskAction} className="mt-6 space-y-3">
             <input type="hidden" name="lead_id" value={lead.id} />

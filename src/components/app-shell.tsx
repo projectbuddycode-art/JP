@@ -90,7 +90,7 @@ export function AppShell({
                 <div key={group} className="mb-4">
                   {!collapsed ? (
                     <p className="px-3 pb-1 pt-2 text-[10px] uppercase tracking-[0.16em] text-muted">
-                      {group === "main" ? "Operations" : "Administration"}
+                      {group === "main" ? "Operations" : "Business management"}
                     </p>
                   ) : null}
                   {groupItems.map((item) => {
