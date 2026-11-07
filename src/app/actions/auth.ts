@@ -1,19 +1,22 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { createAdminClient, tryCreateAdminClient } from "@/lib/supabase/admin";
+import { tryCreateAdminClient } from "@/lib/supabase/admin";
 import { serverEnv } from "@/lib/env";
 import { writeAudit } from "@/lib/audit";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import {
   clearDemoCookie,
-  demoCredentials,
+  demoConfigured,
+  demoPasswordMatches,
   isDemoAuthMode,
   setDemoCookie,
 } from "@/lib/auth/demo-session";
 
-const credentialsSchema = z.object({
+const productionCredentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
@@ -21,24 +24,29 @@ const credentialsSchema = z.object({
 export type AuthFormState = { error: string | null; message?: string | null };
 
 export async function signInAction(_state: AuthFormState, formData: FormData): Promise<AuthFormState> {
-  const parsed = credentialsSchema.safeParse({
-    email: formData.get("email"),
+  const hdrs = await headers();
+  const ip = hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() || "login";
+  const limited = await enforceRateLimit(`demo-login:${ip}`, 8, 15 * 60_000);
+  if (!limited.allowed) return { error: "Too many sign-in attempts. Try again later." };
+
+  if (isDemoAuthMode()) {
+    if (!demoConfigured()) {
+      return { error: "Demo mode is enabled but DEMO_USERNAME, DEMO_PASSWORD, and DEMO_SESSION_SECRET are not all set." };
+    }
+    const username = String(formData.get("username") || formData.get("email") || "");
+    const password = String(formData.get("password") || "");
+    if (!demoPasswordMatches(username, password)) {
+      return { error: "Invalid username or password." };
+    }
+    await setDemoCookie(username.trim().toLowerCase());
+    redirect("/overview");
+  }
+
+  const parsed = productionCredentialsSchema.safeParse({
+    email: formData.get("email") || formData.get("username"),
     password: formData.get("password"),
   });
   if (!parsed.success) return { error: "Enter a valid email and password (8+ characters)." };
-  if (isDemoAuthMode()) {
-    const demo = demoCredentials();
-    if (
-      parsed.data.email.toLowerCase() === demo.email &&
-      parsed.data.password === demo.password
-    ) {
-      await recordLoginEvent(parsed.data.email, true);
-      await setDemoCookie(parsed.data.email.toLowerCase());
-      redirect("/overview");
-    }
-    await recordLoginEvent(parsed.data.email, false);
-    return { error: "Invalid demo email or password." };
-  }
   const supabase = await createServerSupabase();
   if (!supabase) return { error: "Supabase is not configured yet." };
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
@@ -48,6 +56,7 @@ export async function signInAction(_state: AuthFormState, formData: FormData): P
 }
 
 async function recordLoginEvent(email: string, success: boolean) {
+  if (isDemoAuthMode()) return;
   const admin = tryCreateAdminClient();
   if (!admin) return;
   await admin.from("login_events").insert({
@@ -58,14 +67,14 @@ async function recordLoginEvent(email: string, success: boolean) {
 }
 
 export async function signUpAction(_state: AuthFormState, formData: FormData): Promise<AuthFormState> {
-  const parsed = credentialsSchema.safeParse({
+  if (isDemoAuthMode()) {
+    return { error: "Account creation is disabled in demonstration mode." };
+  }
+  const parsed = productionCredentialsSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
   });
   if (!parsed.success) return { error: "Enter a valid email and password (8+ characters)." };
-  if (isDemoAuthMode()) {
-    return signInAction(_state, formData);
-  }
   const supabase = await createServerSupabase();
   if (!supabase) return { error: "Supabase is not configured yet." };
   const { error } = await supabase.auth.signUp({
@@ -79,12 +88,17 @@ export async function signUpAction(_state: AuthFormState, formData: FormData): P
 
 export async function signOutAction() {
   await clearDemoCookie();
-  const supabase = await createServerSupabase();
-  await supabase?.auth.signOut();
+  if (!isDemoAuthMode()) {
+    const supabase = await createServerSupabase();
+    await supabase?.auth.signOut();
+  }
   redirect("/login");
 }
 
 export async function resetPasswordAction(_state: AuthFormState, formData: FormData): Promise<AuthFormState> {
+  if (isDemoAuthMode()) {
+    return { error: "Password reset is not available in demonstration mode." };
+  }
   const email = String(formData.get("email") ?? "");
   if (!z.string().email().safeParse(email).success) {
     return { error: "Enter a valid email address." };
@@ -99,6 +113,9 @@ export async function resetPasswordAction(_state: AuthFormState, formData: FormD
 }
 
 export async function claimOwnerAction(_state: AuthFormState, formData: FormData): Promise<AuthFormState> {
+  if (isDemoAuthMode()) {
+    return { error: "Owner bootstrap is not used in demonstration mode." };
+  }
   const secret = String(formData.get("secret") ?? "");
   const env = serverEnv();
   const supabase = await createServerSupabase();
@@ -118,15 +135,21 @@ export async function claimOwnerAction(_state: AuthFormState, formData: FormData
   const { error } = await admin.rpc("claim_first_owner", { target_id: user.id });
   if (error) return { error: error.message };
   await writeAudit({ actorId: user.id, action: "owner_claimed", entityType: "profiles", entityId: user.id });
-  redirect("/overview");
+  return { error: null, message: "You are now the workspace owner." };
 }
 
 export async function inviteMemberAction(formData: FormData) {
-  const { requireOwnerProfile } = await import("@/lib/auth/session");
-  await requireOwnerProfile();
-  const email = String(formData.get("email") ?? "").toLowerCase();
-  if (!z.string().email().safeParse(email).success) throw new Error("Enter a valid email.");
-  const admin = createAdminClient();
-  const { error } = await admin.from("team_invites").insert({ email });
-  if (error) throw new Error(error.message);
+  const { inviteUserAction } = await import("@/app/actions/team");
+  return inviteUserAction(formData);
+}
+
+export async function resetDemoDataAction() {
+  if (!isDemoAuthMode()) {
+    throw new Error("Demo reset is only available when DEMO_MODE=true.");
+  }
+  const { resetDemoStore } = await import("@/lib/demo/store");
+  resetDemoStore();
+  const { revalidatePath } = await import("next/cache");
+  revalidatePath("/", "layout");
+  redirect("/overview");
 }

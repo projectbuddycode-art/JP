@@ -1,4 +1,4 @@
-import { inviteMemberAction } from "@/app/actions/auth";
+import { inviteMemberAction, resetDemoDataAction } from "@/app/actions/auth";
 import { changePasswordAction } from "@/app/actions/team";
 import { Button, Card, Input, Label, PageHeader } from "@/components/ui";
 import { requireActiveProfile } from "@/lib/auth/session";
@@ -9,7 +9,7 @@ import { profileRole } from "@/lib/auth/permissions";
 export const instant = false;
 
 export default async function SettingsPage() {
-  const { supabase, profile } = await requireActiveProfile();
+  const { supabase, profile, demo } = await requireActiveProfile();
   const { data: settings } = await supabase.from("workspace_settings").select("*").maybeSingle();
   const { data: members } = await supabase.from("profiles").select("email, role, status, full_name");
   const owner = profileRole(profile) === "owner";
@@ -42,6 +42,15 @@ export default async function SettingsPage() {
           ) : null}
           <p className="mt-3 text-sm"><a className="text-accent" href="/team">Open full team management</a></p>
         </Card>
+        {demo ? (
+          <Card>
+            <h2 className="font-serif text-xl">Reset demo data</h2>
+            <p className="mt-2 text-sm text-muted">Restores the synthetic JP demonstration records in memory. This does not touch any production database.</p>
+            <form action={resetDemoDataAction} className="mt-4">
+              <Button type="submit" variant="secondary">Reset demo data</Button>
+            </form>
+          </Card>
+        ) : (
         <Card>
           <h2 className="font-serif text-xl">Change password</h2>
           {profile.must_change_password ? (
@@ -53,6 +62,7 @@ export default async function SettingsPage() {
             <Button type="submit">Update password</Button>
           </form>
         </Card>
+        )}
       </div>
       <Card className="mt-6">
         <h2 className="font-serif text-xl">KPI definitions</h2>

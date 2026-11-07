@@ -54,11 +54,13 @@ export function AppShell({
   profileName,
   notificationCount,
   navItems,
+  demo = false,
 }: {
   children: React.ReactNode;
   profileName: string;
   notificationCount: number;
   navItems: Array<{ href: string; label: string; group?: "main" | "admin" }>;
+  demo?: boolean;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -145,6 +147,11 @@ export function AppShell({
                 </span>
               ) : null}
             </Link>
+            {demo ? (
+              <span className="hidden rounded-md border border-warm/50 bg-amber-50 px-2 py-1 text-xs font-medium sm:inline">
+                DEMO MODE
+              </span>
+            ) : null}
             <form action={signOutAction}>
               <button className="rounded-md border border-line px-3 py-1.5 text-sm">{profileName}</button>
             </form>

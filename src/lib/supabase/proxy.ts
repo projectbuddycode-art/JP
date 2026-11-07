@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { publicEnv } from "@/lib/public-env";
-import { DEMO_COOKIE, verifyDemoToken } from "@/lib/auth/demo-token";
+import { DEMO_COOKIE, isDemoAuthEnabled, verifyDemoToken } from "@/lib/auth/demo-token";
 
 function isPublicPath(path: string) {
   return (
@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
   const path = request.nextUrl.pathname;
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (isDemoAuthEnabled()) {
     const demoUser = verifyDemoToken(request.cookies.get(DEMO_COOKIE)?.value);
     if (!demoUser && !isPublicPath(path)) {
       const url = request.nextUrl.clone();
@@ -47,6 +47,16 @@ export async function updateSession(request: NextRequest) {
     if (demoUser && (path === "/login" || path === "/forgot-password")) {
       const url = request.nextUrl.clone();
       url.pathname = "/overview";
+      return NextResponse.redirect(url);
+    }
+    return response;
+  }
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    if (!isPublicPath(path)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set("next", path);
       return NextResponse.redirect(url);
     }
     return response;

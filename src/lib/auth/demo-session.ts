@@ -1,29 +1,49 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { hasSupabasePublicConfig } from "@/lib/public-env";
-import { DEMO_COOKIE, encodeDemoToken, verifyDemoToken } from "@/lib/auth/demo-token";
+import {
+  DEMO_COOKIE,
+  DEMO_OWNER_ID,
+  DEMO_SESSION_MAX_AGE_SECONDS,
+  encodeDemoToken,
+  isDemoAuthEnabled,
+  safeEqual,
+  verifyDemoToken,
+} from "@/lib/auth/demo-token";
 
-export { DEMO_COOKIE, verifyDemoToken } from "@/lib/auth/demo-token";
-export const DEMO_OWNER_ID = "00000000-0000-0000-0000-00000000d001";
-
-export function isDemoAuthMode() {
-  return process.env.NODE_ENV !== "production" && !hasSupabasePublicConfig();
-}
+export { DEMO_COOKIE, DEMO_OWNER_ID, isDemoAuthEnabled as isDemoAuthMode, verifyDemoToken } from "@/lib/auth/demo-token";
+export const DEMO_STORE_KEY = "jp-demo";
 
 export function demoCredentials() {
+  const username = (process.env.DEMO_USERNAME ?? process.env.DEMO_LOGIN_EMAIL ?? "").trim().toLowerCase();
   return {
-    email: (process.env.DEMO_LOGIN_EMAIL ?? process.env.OWNER_BOOTSTRAP_EMAIL ?? "").toLowerCase(),
-    password: process.env.DEMO_LOGIN_PASSWORD ?? "",
+    username,
+    email: username.includes("@") ? username : `${username || "demo"}@demo.local`,
+    password: process.env.DEMO_PASSWORD ?? process.env.DEMO_LOGIN_PASSWORD ?? "",
   };
 }
 
-export async function setDemoCookie(email: string) {
+export function demoConfigured() {
+  const { username, password } = demoCredentials();
+  return isDemoAuthEnabled() && Boolean(username && password && process.env.DEMO_SESSION_SECRET);
+}
+
+export function demoPasswordMatches(username: string, password: string) {
+  const expected = demoCredentials();
+  if (!expected.username || !expected.password) return false;
+  const userOk = safeEqual(username.trim().toLowerCase(), expected.username);
+  const passOk = safeEqual(password, expected.password);
+  return userOk && passOk;
+}
+
+export async function setDemoCookie(subject: string) {
   const store = await cookies();
-  store.set(DEMO_COOKIE, encodeDemoToken(email), {
+  const secure = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
+  store.set(DEMO_COOKIE, encodeDemoToken(subject), {
     httpOnly: true,
     sameSite: "lax",
+    secure,
     path: "/",
-    maxAge: 7 * 24 * 60 * 60,
+    maxAge: DEMO_SESSION_MAX_AGE_SECONDS,
   });
 }
 
@@ -33,16 +53,16 @@ export async function clearDemoCookie() {
 }
 
 export async function readDemoEmail() {
-  if (!isDemoAuthMode()) return null;
+  if (!isDemoAuthEnabled()) return null;
   const store = await cookies();
   return verifyDemoToken(store.get(DEMO_COOKIE)?.value);
 }
 
-export function demoProfile(email: string) {
+export function demoProfile() {
   return {
     id: DEMO_OWNER_ID,
-    email,
-    full_name: "Project Buddy",
+    email: demoCredentials().email,
+    full_name: "JP Demo",
     role: "owner" as const,
     workspace_role: "owner" as const,
     status: "active" as const,

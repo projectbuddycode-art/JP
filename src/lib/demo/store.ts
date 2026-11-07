@@ -1,4 +1,4 @@
-import { DEMO_OWNER_ID } from "@/lib/auth/demo-session";
+import { DEMO_OWNER_ID } from "@/lib/auth/demo-token";
 
 const now = new Date();
 const iso = (days: number) => new Date(now.getTime() + days * 86_400_000).toISOString();
@@ -25,7 +25,7 @@ export function createDemoStore(email: string) {
       {
         id: DEMO_OWNER_ID,
         email,
-        full_name: "Project Buddy",
+        full_name: "JP Demo",
         role: "owner",
         workspace_role: "owner",
         status: "active",
@@ -35,16 +35,32 @@ export function createDemoStore(email: string) {
       {
         id: "partner-demo",
         email: "partner.demo@example.com",
-        full_name: "Partner A",
+        full_name: "Partner A (demo)",
         role: "member",
         workspace_role: "partner",
+        status: "active",
+      },
+      {
+        id: "sales-demo",
+        email: "sales.demo@example.com",
+        full_name: "Sales executive (demo)",
+        role: "member",
+        workspace_role: "sales",
+        status: "active",
+      },
+      {
+        id: "finance-demo",
+        email: "finance.demo@example.com",
+        full_name: "Finance (demo)",
+        role: "member",
+        workspace_role: "finance",
         status: "active",
       },
     ],
     workspace_settings: [
       {
         id: "00000000-0000-0000-0000-000000000001",
-        business_name: "Northridge Demo Workspace",
+        business_name: "JP Himalayan Journeys (demo)",
         timezone: "Asia/Kolkata",
         default_currency: "INR",
         demo_mode: true,
@@ -142,7 +158,7 @@ export function createDemoStore(email: string) {
         id: "aud1",
         event_code: "AUD-DEMO-0001",
         actor_id: DEMO_OWNER_ID,
-        actor_name: "Project Buddy",
+        actor_name: "JP Demo",
         actor_email: email,
         actor_role: "owner",
         action: "lead_created",
@@ -156,7 +172,12 @@ export function createDemoStore(email: string) {
     login_events: [],
     lead_assignment_history: [],
     approvals: [],
-    suppliers: [{ id: "sup1", name: "Kaza homestay (demo)", kind: "hotel", active: true, location: "Kaza" }],
+    suppliers: [
+      { id: "sup1", name: "Kaza homestay (demo)", kind: "hotel", active: true, location: "Kaza" },
+      { id: "sup2", name: "Manali fleet operator (demo)", kind: "vehicle", active: true, location: "Manali" },
+      { id: "sup3", name: "Spiti mountain driver (demo)", kind: "driver", active: true, location: "Kaza" },
+      { id: "sup4", name: "Local monastery guide (demo)", kind: "guide", active: true, location: "Kaza" },
+    ],
     departures: [
       {
         id: "dep1",
@@ -180,17 +201,24 @@ export function createDemoStore(email: string) {
     ],
     itinerary_days: [
       { id: "it1", departure_id: "dep1", day_number: 1, location: "Manali", activities: "Briefing and overnight.", customer_notes: "Acclimatise. Confirm pickup the evening before.", internal_notes: "Confirm hotel check-in names." },
+      { id: "it2", departure_id: "dep1", day_number: 2, location: "Kaza", route: "Manali–Kaza", activities: "High-altitude drive (demo itinerary).", customer_notes: "Pace for acclimatisation.", internal_notes: "Fuel stop checklist." },
     ],
     departure_suppliers: [
       { id: "ds1", departure_id: "dep1", supplier_id: "sup1", service: "Nights 3–5 Kaza", agreed_cost: 48000, advance_paid: 10000, status: "awaiting_confirmation" },
+      { id: "ds2", departure_id: "dep1", supplier_id: "sup2", service: "Tempo traveller", agreed_cost: 32000, advance_paid: 0, status: "requested" },
+      { id: "ds3", departure_id: "dep1", supplier_id: "sup3", service: "Driver", agreed_cost: 12000, advance_paid: 0, status: "requested" },
     ],
     booking_payments: [
       { id: "pay1", booking_id: "b1", amount: 20000, paid_on: iso(-4).slice(0, 10), method: "upi", recorded_by: DEMO_OWNER_ID, verified: true },
     ],
-    trip_expenses: [],
+    trip_expenses: [
+      { id: "ex1", departure_id: "dep1", category: "meals", amount: 8500, currency: "INR", incurred_on: "2027-06-11", notes: "Synthetic demo expense" },
+    ],
     trip_incidents: [],
     trip_operations: [],
-    report_runs: [],
+    report_runs: [
+      { id: "rr1", status: "generated", started_at: iso(-1), finished_at: iso(-1), summary: { period: "daily", timezone: "Asia/Kolkata", snapshot: { newLeads: 2 }, delivered: false } },
+    ],
     report_schedules: [],
     report_definitions: [],
     customer_feedback: [],
@@ -236,7 +264,7 @@ export function createDemoStore(email: string) {
     permissions: [],
     role_permissions: [],
     notifications: [
-      { id: "n1", profile_id: DEMO_OWNER_ID, title: "Demo workspace", body: "You are browsing labelled demo records. Integrations are not connected.", read_at: null },
+      { id: "n1", profile_id: DEMO_OWNER_ID, title: "DEMO MODE", body: "Synthetic JP demonstration data. Integrations are DEMO / NOT CONNECTED. Nothing is written to a production database.", read_at: null },
     ],
     trip_enquiries: [
       { id: "te1", contact_id: "c1", lead_id: "l1", package_id: "p1", destination: "Spiti Valley", travellers: 4 },
@@ -248,12 +276,13 @@ export function createDemoStore(email: string) {
 }
 
 let store: Record<string, Array<Record<string, unknown>>> | null = null;
-let storeEmail = "";
 
-export function getDemoStore(email: string) {
-  if (!store || storeEmail !== email) {
-    store = createDemoStore(email);
-    storeEmail = email;
-  }
+export function getDemoStore(email = "jp-demo") {
+  if (!store) store = createDemoStore(email);
+  return store;
+}
+
+export function resetDemoStore(email = "jp-demo") {
+  store = createDemoStore(email);
   return store;
 }

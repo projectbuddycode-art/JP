@@ -1,5 +1,5 @@
 import { getDemoStore } from "@/lib/demo/store";
-import { DEMO_OWNER_ID } from "@/lib/auth/demo-session";
+import { DEMO_OWNER_ID } from "@/lib/auth/demo-token";
 
 type Row = Record<string, unknown>;
 

@@ -16,10 +16,11 @@ export async function getSessionUser() {
     const supabase = createDemoClient(email) as unknown as NonNullable<
       Awaited<ReturnType<typeof createServerSupabase>>
     >;
+    const profile = demoProfile();
     return {
       supabase,
-      user: { id: demoProfile(email).id, email },
-      profile: demoProfile(email),
+      user: { id: profile.id, email: profile.email },
+      profile,
       demo: true as const,
     };
   }

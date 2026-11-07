@@ -11,7 +11,7 @@ import { profileRole } from "@/lib/auth/permissions";
 export const instant = false;
 
 export default async function IntegrationsPage() {
-  const { supabase, profile } = await requireActiveProfile();
+  const { supabase, profile, demo } = await requireActiveProfile();
   const { data: connections } = await supabase.from("integration_connections").select("*");
   const { data: events } = await supabase
     .from("integration_events")
@@ -22,26 +22,33 @@ export default async function IntegrationsPage() {
   const owner = profileRole(profile) === "owner";
   const byProvider = new Map((connections ?? []).map((item) => [item.provider, item]));
   const n8n = n8nConfig();
-  const n8nLive = n8n.configured ? await testN8nConnection() : { ok: false, error: "Not configured" };
+  const n8nLive = demo || !n8n.configured ? { ok: false, error: "Not configured" } : await testN8nConnection();
 
   return (
     <div>
       <PageHeader
         title="Integrations"
-        description="Connection state is verified, never assumed. Tokens never render here. Every channel writes into the same lead inbox."
+        description={demo
+          ? "DEMO MODE: providers are shown as not connected. No live lead delivery or publishing is simulated."
+          : "Connection state is verified, never assumed. Tokens never render here. Every channel writes into the same lead inbox."}
         actions={<Link className="rounded-md border border-line px-3 py-2 text-sm" href="/integrations/delivery">Delivery monitor</Link>}
       />
       <div className="grid gap-4 lg:grid-cols-2">
         {PROVIDER_CATALOG.map((doc) => {
           const connection = byProvider.get(doc.id);
-          const n8nOverride = doc.id === "n8n" ? (n8nLive.ok ? "connected" : "not_configured") : null;
-          const status = displayConnectionStatus({
+          const n8nOverride = demo
+            ? "not_configured"
+            : doc.id === "n8n"
+              ? (n8nLive.ok ? "connected" : "not_configured")
+              : null;
+          const statusLabel = displayConnectionStatus({
             provider: doc.id,
             status: n8nOverride ?? connection?.status ?? "not_configured",
             last_error: connection?.last_error,
             authorization_status: connection?.authorization_status,
             last_success_at: connection?.last_success_at,
           });
+          const status = demo ? `DEMO / ${statusLabel}` : statusLabel;
           return (
             <Card key={doc.id}>
               <div className="flex items-start justify-between gap-3">
@@ -57,10 +64,10 @@ export default async function IntegrationsPage() {
               ) : null}
               <div className="mt-3 flex flex-wrap gap-2">
                 <Link className="text-sm text-accent" href={`/integrations/${doc.id}`}>Setup guide</Link>
-                {doc.id === "meta_lead_ads" || doc.id === "meta_social" ? (
+                {!demo && (doc.id === "meta_lead_ads" || doc.id === "meta_social") ? (
                   <a className="text-sm text-accent" href="/api/oauth/meta">Connect Meta</a>
                 ) : null}
-                {doc.id === "linkedin" ? (
+                {!demo && doc.id === "linkedin" ? (
                   <a className="text-sm text-accent" href="/api/oauth/linkedin">Connect LinkedIn</a>
                 ) : null}
               </div>

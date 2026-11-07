@@ -26,10 +26,11 @@ export default async function WorkspaceLayout({
       profileName={profile.full_name || profile.email}
       notificationCount={count ?? 0}
       navItems={navForRole(profileRole(profile))}
+      demo={demo}
     >
       {demo ? (
         <div className="mb-4 rounded-md border border-warm/40 bg-amber-50 px-4 py-2 text-sm">
-          Local demo workspace — records are labelled sample data and reset when the server restarts. Integrations are not connected.
+          <strong>DEMO MODE</strong> — JP demonstration account. Synthetic data only. Integrations are not connected. Changes stay in this isolated demo store and never write to production Supabase.
         </div>
       ) : null}
       {children}
