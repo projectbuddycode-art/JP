@@ -24,14 +24,14 @@ export default async function DestinationsPage() {
   const [destinations, packages] = await Promise.all([listPublishedDestinations(), listPublishedPackages()]);
   const rows = destinations.length ? destinations : FALLBACK;
   return (
-    <main className="px-6 pb-24 pt-10">
+    <main className="px-4 pb-24 pt-8 sm:px-6 sm:pt-10">
       <div className="mx-auto max-w-6xl">
         <p className="site-kicker">Destinations</p>
-        <h1 className="mt-3 font-serif text-5xl md:text-6xl">The Himalayas, as we travel them.</h1>
+        <h1 className="mt-3 font-serif text-3xl sm:text-5xl md:text-6xl">The Himalayas, as we travel them.</h1>
         <p className="mt-5 max-w-2xl text-[#5d6d7a]">
           Additional destinations can be published from the CRM without a code change. We do not invent season or permit facts here.
         </p>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map((item) => {
             const count = packages.filter((pack) => pack.destination.toLowerCase().includes(item.name.toLowerCase().split(" ")[0])).length;
             return (

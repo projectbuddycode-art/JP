@@ -44,8 +44,8 @@ export function TripCard({
             ) : null}
           </div>
         </div>
-        <div className="flex flex-1 flex-col p-5">
-          <h3 className="font-serif text-2xl leading-tight text-[#12324d]">{pack.name}</h3>
+        <div className="flex min-w-0 flex-1 flex-col p-5">
+          <h3 className="break-words font-serif text-xl leading-tight text-[#12324d] sm:text-2xl">{pack.name}</h3>
           {pack.short_description ? <p className="mt-2 line-clamp-2 text-sm text-[#5d6d7a]">{pack.short_description}</p> : null}
           <p className="mt-4 text-sm font-medium text-[#12324d]">
             {pack.duration_days ? `${pack.duration_days} days` : "Duration on request"}

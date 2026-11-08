@@ -103,11 +103,11 @@ export default async function HomePage() {
 
       <OfferBanner offers={offers} />
 
-      <section id="discover" className="px-6 py-20">
+      <section id="discover" className="px-4 py-12 sm:px-6 sm:py-20">
         <Reveal className="mx-auto max-w-6xl">
           <p className="site-kicker">Popular destinations</p>
-          <h2 className="mt-3 font-serif text-4xl md:text-5xl">Landscapes we actually operate.</h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <h2 className="mt-3 font-serif text-3xl sm:text-4xl md:text-5xl">Landscapes we actually operate.</h2>
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {destRows.map((item, index) => {
               const profile = DESTINATION_PROFILES[item.slug];
               const count = packages.filter((pack) => pack.destination.toLowerCase().includes(item.name.toLowerCase().split(" ")[0])).length;
@@ -133,12 +133,12 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      <section className="bg-white py-20">
-        <Reveal className="mx-auto max-w-6xl px-6">
+      <section className="bg-white py-12 sm:py-20">
+        <Reveal className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="site-kicker">Trending trips</p>
-              <h2 className="mt-3 font-serif text-4xl">Published from the travel desk.</h2>
+              <h2 className="mt-3 font-serif text-3xl sm:text-4xl">Published from the travel desk.</h2>
             </div>
             <Link href="/trips" className="site-btn-ghost">View all packages</Link>
           </div>
@@ -149,27 +149,27 @@ export default async function HomePage() {
       </section>
 
       {departures.length ? (
-        <section className="px-6 py-20">
+        <section className="px-4 py-12 sm:px-6 sm:py-20">
           <Reveal className="mx-auto max-w-6xl">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="site-kicker">Upcoming group trips</p>
-                <h2 className="mt-3 font-serif text-4xl">Scheduled departures only.</h2>
+                <h2 className="mt-3 font-serif text-3xl sm:text-4xl">Scheduled departures only.</h2>
               </div>
               <Link href="/group-trips" className="site-btn-ghost">All group trips</Link>
             </div>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {departures.slice(0, 3).map((item) => <GroupTripCard key={item.id} departure={item} />)}
             </div>
           </Reveal>
         </section>
       ) : null}
 
-      <section className="bg-[#fff8e8] py-20">
-        <Reveal className="mx-auto max-w-6xl px-6">
+      <section className="bg-[#fff8e8] py-12 sm:py-20">
+        <Reveal className="mx-auto max-w-6xl px-4 sm:px-6">
           <p className="site-kicker">Why travel with us</p>
-          <h2 className="mt-3 font-serif text-4xl">Colourful, careful, and honest about what is confirmed.</h2>
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
+          <h2 className="mt-3 font-serif text-3xl sm:text-4xl">Colourful, careful, and honest about what is confirmed.</h2>
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {WHY_US.map((item, index) => (
               <article key={item.title} className={`rounded-3xl p-6 ${ACCENTS[index % ACCENTS.length]}`}>
                 <h3 className="font-serif text-2xl">{item.title}</h3>
@@ -177,7 +177,7 @@ export default async function HomePage() {
               </article>
             ))}
           </div>
-          <ol className="mt-12 grid gap-4 md:grid-cols-5">
+          <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {HOW_IT_WORKS.map((item) => (
               <li key={item.step} className="rounded-3xl bg-white p-5 shadow-sm">
                 <p className="text-[11px] font-bold text-[#f26b4e]">{item.step}</p>
@@ -189,17 +189,17 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      <section className="px-6 py-20">
+      <section className="px-4 py-12 sm:px-6 sm:py-20">
         <Reveal className="mx-auto max-w-6xl">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="site-kicker">Traveller experiences</p>
-              <h2 className="mt-3 font-serif text-4xl">Words we have permission to share.</h2>
+              <h2 className="mt-3 font-serif text-3xl sm:text-4xl">Words we have permission to share.</h2>
             </div>
             <Link href="/reviews" className="site-btn-ghost">Read / write a review</Link>
           </div>
           {testimonials.length ? (
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {testimonials.slice(0, 6).map((item) => <ReviewCard key={item.id} item={item} compact />)}
             </div>
           ) : (
@@ -210,10 +210,10 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      <section className="bg-white px-6 py-20">
+      <section className="bg-white px-4 py-12 sm:px-6 sm:py-20">
         <Reveal className="mx-auto max-w-6xl">
           <p className="site-kicker">Traveller gallery</p>
-          <h2 className="mt-3 font-serif text-4xl">Landscapes from the routes we publish.</h2>
+          <h2 className="mt-3 font-serif text-3xl sm:text-4xl">Landscapes from the routes we publish.</h2>
           <p className="mt-3 max-w-2xl text-sm text-[#5d6d7a]">Licensed destination photography until studio trip photographs are uploaded in the CRM.</p>
           <div className="mt-8">
             <TravellerGallery items={gallery} />
@@ -222,16 +222,16 @@ export default async function HomePage() {
       </section>
 
       {articles.length ? (
-        <section className="px-6 py-20">
+        <section className="px-4 py-12 sm:px-6 sm:py-20">
           <Reveal className="mx-auto max-w-6xl">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="site-kicker">Travel stories</p>
-                <h2 className="mt-3 font-serif text-4xl">Notes from the desk.</h2>
+                <h2 className="mt-3 font-serif text-3xl sm:text-4xl">Notes from the desk.</h2>
               </div>
               <Link href="/travel-guides" className="site-btn-ghost">All stories</Link>
             </div>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {articles.slice(0, 3).map((article) => (
                 <Link key={article.id} href={`/travel-guides/${article.slug}`} className="site-card group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -254,27 +254,27 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      <section className="px-6 py-16">
+      <section className="px-4 py-12 sm:px-6 sm:py-16">
         <Reveal className="mx-auto max-w-6xl">
           <FaqList faqs={PROCESS_FAQS} />
         </Reveal>
       </section>
 
-      <section className="relative mx-6 mb-8 overflow-hidden rounded-[2.5rem]">
+      <section className="relative mx-4 mb-8 overflow-hidden rounded-[1.75rem] sm:mx-6 sm:rounded-[2.5rem]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={IMAGES.cta} alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-[#12324d]/55" />
-        <div className="relative mx-auto flex min-h-[52vh] max-w-4xl flex-col items-start justify-end px-6 py-16 text-white">
-          <h2 className="font-serif text-4xl md:text-6xl">Your Next Adventure Is Waiting.</h2>
-          <div className="mt-8 flex flex-wrap gap-3">
+        <div className="relative mx-auto flex min-h-[40vh] max-w-4xl flex-col items-start justify-end px-5 py-12 text-white sm:min-h-[52vh] sm:px-6 sm:py-16">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-6xl">Your Next Adventure Is Waiting.</h2>
+          <div className="site-cta-row mt-8">
             <Link href="/trips" className="site-btn-gold">Explore trips</Link>
             <Link href="/custom-trip" className="site-btn-ghost border-white text-white">Plan a custom journey</Link>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-3xl px-6 py-16">
-        <h2 className="font-serif text-4xl">Prefer a short form?</h2>
+      <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+        <h2 className="font-serif text-3xl sm:text-4xl">Prefer a short form?</h2>
         <p className="mt-3 text-[#5d6d7a]">Same CRM intake as Plan Your Trip.</p>
         <div className="mt-8">
           <EnquiryForm landingPath="/" />

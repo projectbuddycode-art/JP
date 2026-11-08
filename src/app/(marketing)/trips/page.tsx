@@ -27,7 +27,7 @@ export default async function TripsPage({
       )
     : packages;
   return (
-    <main className="px-6 pb-24 pt-10">
+    <main className="px-4 pb-24 pt-8 sm:px-6 sm:pt-10">
       <JsonLd
         data={itemListJsonLd(
           "Published Himalayan journeys",
@@ -36,7 +36,7 @@ export default async function TripsPage({
       />
       <div className="mx-auto max-w-6xl">
         <p className="site-kicker">Tour packages</p>
-        <h1 className="mt-3 font-serif text-5xl md:text-6xl">Find a Himalayan journey.</h1>
+        <h1 className="mt-3 font-serif text-3xl sm:text-5xl md:text-6xl">Find a Himalayan journey.</h1>
         <p className="mt-4 max-w-2xl text-[#5d6d7a]">
           Every card is a published CRM package. Drafts, scheduled, and unpublished trips are not listed.
         </p>

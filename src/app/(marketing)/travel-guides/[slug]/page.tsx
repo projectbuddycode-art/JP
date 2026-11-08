@@ -22,7 +22,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   const article = await getPublishedArticle(slug);
   if (!article) notFound();
   return (
-    <article className="mx-auto max-w-3xl px-6 pb-24 pt-10">
+    <article className="mx-auto max-w-3xl px-4 pb-24 pt-8 sm:px-6 sm:pt-10">
       <JsonLd
         data={articleJsonLd({
           title: article.title,

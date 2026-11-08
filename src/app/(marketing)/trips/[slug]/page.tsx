@@ -80,7 +80,7 @@ export default async function TripDetailPage({
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   return (
-    <article className="pb-20 lg:pb-0">
+    <article className="pb-28 lg:pb-0">
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
@@ -106,7 +106,7 @@ export default async function TripDetailPage({
         <EnquiryCta enquireHref="#enquire" path={`/trips/${slug}`} />
       </PhotoHero>
 
-      <dl className="mx-auto grid max-w-6xl gap-6 px-6 py-10 md:grid-cols-4">
+      <dl className="mx-auto grid max-w-6xl gap-6 px-4 py-8 sm:grid-cols-2 sm:px-6 sm:py-10 lg:grid-cols-4">
         {facts.map((fact) => (
           <div key={fact.label} className="border-t border-[#d7e2ee] pt-4">
             <dt className="text-[11px] uppercase tracking-[0.2em] text-[#8a96a3]">{fact.label}</dt>
@@ -115,7 +115,7 @@ export default async function TripDetailPage({
         ))}
       </dl>
 
-      <div className="mx-auto grid max-w-6xl gap-16 px-6 py-12 lg:grid-cols-[1.4fr_0.8fr]">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-8 sm:px-6 sm:py-12 lg:grid-cols-[1.4fr_0.8fr] lg:gap-16">
         <div>
           <Reveal>
             <h2 className="font-serif text-3xl">About this journey</h2>
@@ -212,7 +212,7 @@ export default async function TripDetailPage({
         </aside>
       </div>
       {related.length ? (
-        <section className="mx-auto max-w-6xl px-6 pb-24">
+        <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
           <h2 className="font-serif text-3xl">Related journeys</h2>
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {related.map((item) => <TripCard key={item.id} pack={item} />)}

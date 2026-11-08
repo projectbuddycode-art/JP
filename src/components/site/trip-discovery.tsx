@@ -70,13 +70,13 @@ export function TripDiscovery({
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2">
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {TYPES.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => setType(item.id)}
-            className={`rounded-full px-4 py-2 text-[12px] font-semibold ${
+            className={`shrink-0 rounded-full px-4 py-2 text-[12px] font-semibold ${
               type === item.id ? "bg-[#12324d] text-white" : "bg-white text-[#3d5364] shadow-sm"
             }`}
             aria-pressed={type === item.id}
@@ -85,7 +85,7 @@ export function TripDiscovery({
           </button>
         ))}
       </div>
-      <div className="mt-4 grid gap-3 md:grid-cols-4">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <select className="site-input" value={destination} onChange={(event) => setDestination(event.target.value)}>
           <option value="all">All destinations</option>
           {destinations.map((item) => <option key={item} value={item}>{item}</option>)}

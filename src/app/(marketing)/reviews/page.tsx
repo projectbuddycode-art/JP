@@ -16,9 +16,9 @@ export async function generateMetadata() {
 export default async function ReviewsPage() {
   const testimonials = await listApprovedTestimonials();
   return (
-    <main className="mx-auto max-w-6xl px-6 pb-24 pt-10">
+    <main className="mx-auto max-w-6xl px-4 pb-24 pt-8 sm:px-6 sm:pt-10">
       <p className="site-kicker">Reviews</p>
-      <h1 className="mt-3 font-serif text-5xl">Traveller experiences</h1>
+      <h1 className="mt-3 font-serif text-3xl sm:text-5xl">Traveller experiences</h1>
       <p className="mt-4 max-w-2xl text-[#5d6d7a]">
         Ratings and photographs appear only when they were submitted with permission and approved in the CRM. We do not copy reviews from other brands.
       </p>

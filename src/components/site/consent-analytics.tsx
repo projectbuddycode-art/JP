@@ -62,10 +62,16 @@ export function ConsentAnalytics({
     }
   }, [consent, ga4, pixel]);
 
+  useEffect(() => {
+    const visible = enabled && consent === "unknown";
+    document.body.classList.toggle("site-consent-open", visible);
+    return () => document.body.classList.remove("site-consent-open");
+  }, [enabled, consent]);
+
   if (!enabled || consent !== "unknown") return null;
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#dce7ef] bg-white px-4 py-3 text-sm text-[#12324d]">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
+    <div className="site-consent-bar fixed inset-x-0 bottom-0 z-[45] border-t border-[#dce7ef] bg-white px-4 py-3 text-sm text-[#12324d]" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+      <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <p className="max-w-2xl text-[#4a5866]">
           Analytics cookies load only if you accept. Enquiry forms work without them.
         </p>

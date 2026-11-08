@@ -15,9 +15,9 @@ export function GroupTripCard({ departure }: { departure: PublicDeparture }) {
   return (
     <article className="site-card p-6">
       <p className="site-kicker">{departure.destination || pack?.destination || "Group trip"}</p>
-      <h3 className="mt-2 font-serif text-2xl">{departure.name}</h3>
+      <h3 className="mt-2 break-words font-serif text-xl sm:text-2xl">{departure.name}</h3>
       <dl className="mt-4 grid gap-2 text-sm text-[#3d5364]">
-        <div className="flex justify-between gap-4"><dt>Departure</dt><dd>{departure.start_date}</dd></div>
+        <div className="flex justify-between gap-3"><dt className="shrink-0">Departure</dt><dd className="min-w-0 text-right">{departure.start_date}</dd></div>
         {departure.end_date ? <div className="flex justify-between gap-4"><dt>Return</dt><dd>{departure.end_date}</dd></div> : null}
         {departure.duration_days ? <div className="flex justify-between gap-4"><dt>Duration</dt><dd>{departure.duration_days} days</dd></div> : null}
         {pack ? <div className="flex justify-between gap-4"><dt>Price</dt><dd>{tripPriceLabel(pack)}</dd></div> : null}

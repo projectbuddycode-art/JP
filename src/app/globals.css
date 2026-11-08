@@ -71,6 +71,7 @@ h2,
   --line: #dce7ef;
   background: #f4f8fb;
   color: #12324d;
+  overflow-x: clip;
 }
 
 .site-header {
@@ -84,10 +85,9 @@ h2,
 
 .site-header.is-sticky {
   position: sticky;
-  background: rgba(255, 255, 255, 0.94);
+  background: #ffffff;
   border-bottom: 1px solid #dce7ef;
   box-shadow: 0 10px 30px rgba(18, 50, 77, 0.06);
-  backdrop-filter: blur(16px);
 }
 
 .site-btn-gold {
@@ -97,10 +97,11 @@ h2,
   background: #f26b4e;
   color: #fff;
   border-radius: 999px;
-  padding: 0.85rem 1.45rem;
+  padding: 0.75rem 1.15rem;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.04em;
+  white-space: nowrap;
   box-shadow: 0 10px 24px rgba(242, 107, 78, 0.28);
 }
 
@@ -112,10 +113,26 @@ h2,
   color: #12324d;
   background: #fff;
   border-radius: 999px;
-  padding: 0.85rem 1.45rem;
+  padding: 0.75rem 1.15rem;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.site-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.site-menu-open .site-sticky-bar,
+.site-menu-open .site-consent-bar {
+  display: none;
+}
+
+.site-consent-open .site-sticky-bar {
+  bottom: 7.5rem;
 }
 
 .site-input {
@@ -129,6 +146,7 @@ h2,
 }
 
 .site-card {
+  min-width: 0;
   overflow: hidden;
   border-radius: 1.75rem;
   background: #fff;
@@ -204,6 +222,13 @@ h2,
   }
   to {
     transform: scale(1.08);
+  }
+}
+
+@media (max-width: 639px) {
+  .site-cta-row > a,
+  .site-cta-row > button {
+    flex: 1 1 100%;
   }
 }
 

@@ -12,7 +12,7 @@ export function PhotoGallery({ images, label }: { images: string[]; label: strin
           <button
             key={`${image}-${index}`}
             type="button"
-            className={`group relative min-h-[180px] overflow-hidden rounded-3xl md:min-h-[240px] ${index === 0 ? "col-span-2 md:min-h-[420px]" : ""}`}
+            className={`group relative min-h-[140px] overflow-hidden rounded-2xl sm:min-h-[180px] sm:rounded-3xl md:min-h-[240px] ${index === 0 ? "col-span-2 md:min-h-[420px]" : ""}`}
             onClick={() => setOpen(image)}
             aria-label={`Open ${label} photograph ${index + 1}`}
           >
@@ -25,7 +25,7 @@ export function PhotoGallery({ images, label }: { images: string[]; label: strin
       </div>
       {open ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-6"
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-black/85 p-4 sm:p-6"
           role="dialog"
           aria-modal="true"
           aria-label={`${label} photograph`}

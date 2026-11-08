@@ -10,7 +10,7 @@ export function SiteFooter() {
   const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
   return (
     <footer className="mt-8 border-t border-[#dce7ef] bg-white text-[#12324d]">
-      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-4">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 sm:px-6 sm:py-16 lg:grid-cols-4">
         <div>
           <p className="font-serif text-3xl">{SITE_NAME}</p>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-[#5d6d7a]">

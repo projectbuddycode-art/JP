@@ -25,7 +25,7 @@ export default async function AboutPage() {
   return (
     <main>
       <PhotoHero image={IMAGES.village} kicker="About us" title={page?.title || "One desk. One catalogue."} />
-      <div className="mx-auto max-w-3xl px-6 py-16">
+      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16">
         <p className="text-lg leading-relaxed text-[#3d5364]">
           {body.body ||
             "Northridge is the public face of the same operations desk that manages enquiries, packages, and follow-ups. We publish only itineraries that exist in the catalogue. History, awards, and safety certifications appear here only when the owner adds them in the CMS."}

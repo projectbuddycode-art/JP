@@ -76,7 +76,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         <EnquiryCta enquireHref="#plan" path={`/destinations/${slug}`} />
       </PhotoHero>
 
-      <div className={`mx-auto px-6 py-20 ${layout === "wide" ? "max-w-7xl" : "max-w-6xl"}`}>
+      <div className={`mx-auto px-4 py-10 sm:px-6 sm:py-20 ${layout === "wide" ? "max-w-7xl" : "max-w-6xl"}`}>
         <div className={layout === "split" ? "grid gap-12 lg:grid-cols-2" : "max-w-3xl"}>
           <div>
             <h2 className="font-serif text-3xl">Where this destination sits</h2>
@@ -96,7 +96,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         </div>
 
         {profile?.experiences?.length ? (
-          <ul className="mt-14 grid gap-6 md:grid-cols-4">
+          <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {profile.experiences.map((item) => (
               <li key={item} className="border-t border-[#d7e2ee] pt-5 font-serif text-2xl">{item}</li>
             ))}
@@ -116,7 +116,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
 
         <h2 className="mt-20 font-serif text-4xl">Published {dest.name} trips</h2>
         <p className="mt-3 max-w-2xl text-[#6b7a88]">These cards are live CRM packages. Drafts never appear here.</p>
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {packages.length ? packages.map((pack) => <TripCard key={pack.id} pack={pack} />) : (
             <p className="text-[#6b7a88]">No published packages for this destination yet.</p>
           )}

@@ -30,13 +30,13 @@ export function TravellerGallery({
   if (!items.length) return null;
   return (
     <div>
-      <div className="flex flex-wrap gap-2">
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {CATEGORIES.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => setFilter(item.id)}
-            className={`rounded-full px-4 py-2 text-[12px] font-semibold ${
+            className={`shrink-0 rounded-full px-4 py-2 text-[12px] font-semibold ${
               filter === item.id ? "bg-[#2f9ed8] text-white" : "bg-white text-[#3d5364]"
             }`}
           >

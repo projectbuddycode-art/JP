@@ -16,9 +16,9 @@ export async function generateMetadata() {
 export default async function GuidesPage() {
   const articles = await listPublishedArticles();
   return (
-    <main className="mx-auto max-w-6xl px-6 pb-24 pt-10">
+    <main className="mx-auto max-w-6xl px-4 pb-24 pt-8 sm:px-6 sm:pt-10">
       <p className="site-kicker">Travel stories</p>
-      <h1 className="mt-3 font-serif text-5xl md:text-6xl">Notes from the desk</h1>
+      <h1 className="mt-3 font-serif text-3xl sm:text-5xl md:text-6xl">Notes from the desk</h1>
       <p className="mt-4 max-w-2xl text-[#5d6d7a]">Articles are drafted in the CRM and appear here only when published.</p>
       <div className="mt-12 grid gap-6 md:grid-cols-2">
         {articles.length ? articles.map((article) => (

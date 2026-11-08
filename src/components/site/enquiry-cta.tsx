@@ -12,7 +12,7 @@ export function EnquiryCta({
 }) {
   const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
   return (
-    <div className="mt-10 flex flex-wrap items-center gap-3">
+    <div className="site-cta-row mt-8">
       <Link href={enquireHref} className="site-btn-gold">
         Enquire now
       </Link>
@@ -20,7 +20,7 @@ export function EnquiryCta({
         Design a private version
       </Link>
       {whatsapp ? (
-        <span className="text-sm text-[#3d7ab5]">
+        <span className="flex items-center text-sm text-[#3d7ab5]">
           <WhatsAppLink number={whatsapp} path={path} />
         </span>
       ) : null}

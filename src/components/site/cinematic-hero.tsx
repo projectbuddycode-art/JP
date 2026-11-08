@@ -52,35 +52,37 @@ export function CinematicHero({
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-[#e8f4fb] px-5 pb-12 pt-8 md:px-6 md:pt-10">
-      <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-        <div>
+    <section className="relative overflow-hidden bg-[#e8f4fb] px-4 pb-10 pt-6 sm:px-6 md:pb-12 md:pt-10">
+      <div className="mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
+        <div className="min-w-0">
           <p className="site-kicker">Spiti · Ladakh · Manali</p>
-          <h1 className="mt-4 max-w-xl font-serif text-4xl leading-[1.05] tracking-tight text-[#12324d] md:text-6xl">
+          <h1 className="mt-3 max-w-xl font-serif text-[2.15rem] leading-[1.08] tracking-tight text-[#12324d] sm:text-5xl md:text-6xl">
             {heading}
           </h1>
-          {subheading ? <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#3d5364]">{subheading}</p> : null}
+          {subheading ? <p className="mt-4 max-w-xl text-base leading-relaxed text-[#3d5364] sm:text-lg">{subheading}</p> : null}
           {supporting ? <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#5d6d7a]">{supporting}</p> : null}
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="site-cta-row mt-7">
             <Link href={primaryHref} className="site-btn-gold">{primaryLabel}</Link>
             <Link href={secondaryHref} className="site-btn-ghost">{secondaryLabel}</Link>
           </div>
-          <form action="/trips" className="mt-8 rounded-3xl bg-white p-3 shadow-[0_18px_40px_rgba(18,50,77,0.08)]">
-            <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+          <form action="/trips" className="mt-7 rounded-3xl bg-white p-3 shadow-[0_18px_40px_rgba(18,50,77,0.08)]">
+            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-[1fr_1fr_auto]">
               <label className="sr-only" htmlFor="hero-dest">Destination</label>
-              <select id="hero-dest" name="destination" className="site-input">
+              <select id="hero-dest" name="destination" className="site-input min-w-0">
                 <option value="">All destinations</option>
                 {destinations.map((item) => (
                   <option key={item.slug} value={item.name}>{item.name}</option>
                 ))}
               </select>
               <label className="sr-only" htmlFor="hero-q">Search trips</label>
-              <input id="hero-q" name="q" placeholder="Search a journey" className="site-input" />
-              <button className="site-btn-gold" type="submit">Find trips</button>
+              <input id="hero-q" name="q" placeholder="Search a journey" className="site-input min-w-0" />
+              <button className="site-btn-gold w-full sm:col-span-2 xl:col-span-1 xl:w-auto" type="submit">
+                Find trips
+              </button>
             </div>
           </form>
         </div>
-        <div className="relative min-h-[360px] overflow-hidden rounded-[2rem] shadow-[0_24px_60px_rgba(18,50,77,0.16)] md:min-h-[520px]">
+        <div className="relative h-[220px] overflow-hidden rounded-[1.5rem] shadow-[0_24px_60px_rgba(18,50,77,0.16)] sm:h-[320px] md:h-[420px] lg:h-[520px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={image} alt="Himalayan landscape" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 mix-blend-soft-light opacity-70">
@@ -109,7 +111,7 @@ export function CinematicHero({
               />
             )}
           </div>
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#12324d]/55 to-transparent p-6 text-white">
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#12324d]/55 to-transparent p-4 text-white sm:p-6">
             <p className="text-sm font-medium">Colourful Himalayan journeys, planned from one desk.</p>
           </div>
         </div>

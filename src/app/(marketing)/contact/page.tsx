@@ -12,9 +12,9 @@ export async function generateMetadata() {
 export default function ContactPage() {
   const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
   return (
-    <main className="mx-auto max-w-3xl px-6 pb-24 pt-10">
+    <main className="mx-auto max-w-3xl px-4 pb-24 pt-8 sm:px-6 sm:pt-10">
       <p className="site-kicker">Contact</p>
-      <h1 className="mt-4 font-serif text-5xl md:text-6xl">Talk to the travel team</h1>
+      <h1 className="mt-4 font-serif text-3xl sm:text-5xl md:text-6xl">Talk to the travel team</h1>
       <p className="mt-4 text-[#5c6b7a]">
         Use this form so the enquiry is stored, assigned, and followed up. WhatsApp is shown only when a number is configured for the workspace.
       </p>
