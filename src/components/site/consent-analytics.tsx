@@ -64,14 +64,14 @@ export function ConsentAnalytics({
 
   if (!enabled || consent !== "unknown") return null;
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/15 bg-[#0c0f12] px-4 py-3 text-sm text-white">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#dce7ef] bg-white px-4 py-3 text-sm text-[#12324d]">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
-        <p className="max-w-2xl text-white/70">
+        <p className="max-w-2xl text-[#4a5866]">
           Analytics cookies load only if you accept. Enquiry forms work without them.
         </p>
         <div className="flex gap-2">
           <button
-            className="border border-white/30 px-3 py-1.5"
+            className="rounded-full border border-[#dce7ef] px-3 py-1.5"
             onClick={() => {
               window.localStorage.setItem(KEY, "no");
               emitConsent();
@@ -80,7 +80,7 @@ export function ConsentAnalytics({
             Decline
           </button>
           <button
-            className="bg-[#c4a574] px-3 py-1.5 text-[#111]"
+            className="rounded-full bg-[#f26b4e] px-3 py-1.5 text-white"
             onClick={() => {
               window.localStorage.setItem(KEY, "yes");
               emitConsent();

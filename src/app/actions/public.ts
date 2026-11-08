@@ -5,7 +5,7 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 import { ingestLead } from "@/lib/integrations/process";
 import { tryCreateAdminClient } from "@/lib/supabase/admin";
 import { isPubliclyListed } from "@/lib/site/visibility";
-import { enquirySchema, newsletterSchema } from "@/lib/site/enquiry";
+import { enquirySchema, newsletterSchema, reviewSchema } from "@/lib/site/enquiry";
 
 export type EnquiryState = { error: string | null; ok: boolean };
 
@@ -35,6 +35,7 @@ export async function submitEnquiryAction(_state: EnquiryState, formData: FormDa
     landing_page: formData.get("landing_page") || "",
     flexible_dates: formData.get("flexible_dates") || "",
     communication_preference: formData.get("communication_preference") || "",
+    departure_id: formData.get("departure_id") || "",
   });
   if (!parsed.success) {
     return { error: "Please complete name, phone, and consent.", ok: false };
@@ -83,6 +84,7 @@ export async function submitEnquiryAction(_state: EnquiryState, formData: FormDa
         tripName: parsed.data.trip_name,
         flexible: Boolean(parsed.data.flexible_dates),
         communicationPreference: parsed.data.communication_preference,
+        departureId: parsed.data.departure_id || null,
         referrer: hdrs.get("referer"),
       },
     });
@@ -135,5 +137,51 @@ export async function subscribeNewsletterAction(
     path: "/footer",
     metadata: { email: parsed.data.email, consent: true, delivered: false },
   });
+  return { error: null, ok: true };
+}
+
+export type ReviewState = { error: string | null; ok: boolean };
+
+export async function submitReviewAction(_state: ReviewState, formData: FormData): Promise<ReviewState> {
+  const hdrs = await headers();
+  const ip = hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() || "review-form";
+  const limited = await enforceRateLimit(`review:${ip}`, 4, 10 * 60_000);
+  if (!limited.allowed) return { error: "Too many submissions. Please try later.", ok: false };
+  const parsed = reviewSchema.safeParse({
+    traveller_name: formData.get("traveller_name"),
+    quote: formData.get("quote"),
+    trip_name: formData.get("trip_name") || "",
+    destination: formData.get("destination") || "",
+    rating: formData.get("rating") || undefined,
+    photo_url: formData.get("photo_url") || "",
+    consent: formData.get("consent"),
+    photo_permission: formData.get("photo_permission") || "",
+  });
+  if (!parsed.success) return { error: "Please add your name, a review, and consent to publish after approval.", ok: false };
+  const admin = tryCreateAdminClient();
+  if (!admin) return { error: "Could not store the review.", ok: false };
+  const payload = {
+    quote: parsed.data.quote,
+    attribution: parsed.data.traveller_name,
+    traveller_name: parsed.data.traveller_name,
+    trip_name: parsed.data.trip_name || null,
+    destination: parsed.data.destination || null,
+    rating: parsed.data.rating ?? null,
+    photo_url: parsed.data.photo_url || null,
+    photo_permission: parsed.data.photo_permission === "on",
+    status: "pending",
+    permission_recorded: true,
+  };
+  const { error } = await admin.from("website_testimonials").insert(payload);
+  if (error) {
+    const { error: fallback } = await admin.from("website_testimonials").insert({
+      quote: parsed.data.quote,
+      attribution: parsed.data.traveller_name,
+      trip_name: parsed.data.trip_name || null,
+      status: "pending",
+      permission_recorded: true,
+    });
+    if (fallback) return { error: fallback.message, ok: false };
+  }
   return { error: null, ok: true };
 }

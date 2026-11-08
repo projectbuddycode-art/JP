@@ -15,12 +15,21 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: {
     default: "Northridge — Himalayan journeys",
     template: "%s · Northridge",
   },
   description:
-    "Thoughtfully planned journeys through Spiti Valley, Manali, and Ladakh. Enquire with the travel desk.",
+    "Thoughtfully planned journeys through Spiti Valley, Manali, and Ladakh. Enquire with the travel desk. Viewing a page does not confirm a booking.",
+  keywords: [
+    "Spiti Valley tour",
+    "Ladakh road trip",
+    "Manali holiday",
+    "Himalayan travel",
+    "Northridge",
+    "custom Himalayan itinerary",
+  ],
   verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION
     ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION }
     : undefined,

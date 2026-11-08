@@ -37,6 +37,8 @@ export default async function WebsiteHubPage() {
       </div>
       <div className="mt-6 flex gap-3 text-sm">
         <Link className="rounded-md border border-line px-3 py-2" href="/website/content">Content</Link>
+        <Link className="rounded-md border border-line px-3 py-2" href="/website/reviews">Reviews</Link>
+        <Link className="rounded-md border border-line px-3 py-2" href="/website/offers">Offers</Link>
         <Link className="rounded-md border border-line px-3 py-2" href="/website/enquiries">Enquiries</Link>
         <Link className="rounded-md border border-line px-3 py-2" href="/website/analytics">Analytics</Link>
         <Link className="rounded-md border border-line px-3 py-2" href="/website/seo">SEO</Link>

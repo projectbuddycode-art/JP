@@ -9,15 +9,21 @@ export async function saveWebsitePageAction(formData: FormData) {
   const { supabase, profile } = await requireActiveProfile();
   assertPermission(profile, "content.publish");
   const pageKey = String(formData.get("page_key") || "home");
+  const { data: existing } = await supabase.from("website_pages").select("id, content").eq("page_key", pageKey).maybeSingle();
+  const previous = ((existing?.content ?? {}) as Record<string, unknown>) || {};
   const content = {
+    ...previous,
     heroHeading: String(formData.get("heroHeading") || ""),
     heroSubheading: String(formData.get("heroSubheading") || ""),
     heroSupporting: String(formData.get("heroSupporting") || ""),
     ctaPrimary: String(formData.get("ctaPrimary") || ""),
     ctaSecondary: String(formData.get("ctaSecondary") || ""),
-    body: String(formData.get("body") || ""),
+    body: String(formData.get("body") || formData.get("mission") || previous.body || ""),
+    mission: String(formData.get("mission") || previous.mission || ""),
+    philosophy: String(formData.get("philosophy") || previous.philosophy || ""),
+    verifiedStatOne: String(formData.get("verifiedStatOne") || previous.verifiedStatOne || ""),
+    verifiedStatTwo: String(formData.get("verifiedStatTwo") || previous.verifiedStatTwo || ""),
   };
-  const { data: existing } = await supabase.from("website_pages").select("id, content").eq("page_key", pageKey).maybeSingle();
   if (existing) {
     await supabase.from("website_pages").update({
       content,
@@ -142,4 +148,48 @@ export async function saveDestinationAction(formData: FormData) {
   revalidatePath("/destinations");
   revalidatePath(`/destinations/${slug}`);
   revalidatePath("/website");
+}
+
+export async function saveOfferAction(formData: FormData) {
+  const { supabase, profile } = await requireActiveProfile();
+  assertPermission(profile, "content.publish");
+  const payload = {
+    title: String(formData.get("title") || ""),
+    discount_label: String(formData.get("discount_label") || ""),
+    coupon_code: String(formData.get("coupon_code") || ""),
+    valid_until: String(formData.get("valid_until") || "") || null,
+    applicable_trips: String(formData.get("applicable_trips") || ""),
+    banner_image_url: String(formData.get("banner_image_url") || ""),
+    cta_label: String(formData.get("cta_label") || "View trips"),
+    cta_href: String(formData.get("cta_href") || "/trips"),
+    status: String(formData.get("status") || "draft"),
+    updated_at: new Date().toISOString(),
+  };
+  if (!payload.title) throw new Error("Offer title is required");
+  const { error } = await supabase.from("website_offers").insert(payload);
+  if (error) throw new Error(error.message);
+  await writeAudit({ actor: profile, action: "offer_saved", entityType: "website_offers", entityName: payload.title });
+  revalidatePath("/");
+  revalidatePath("/website");
+}
+
+export async function moderateTestimonialAction(formData: FormData) {
+  const { supabase, profile } = await requireActiveProfile();
+  assertPermission(profile, "content.publish");
+  const id = String(formData.get("id"));
+  const status = String(formData.get("status") || "draft");
+  const featured = formData.get("featured") === "on";
+  const { error } = await supabase
+    .from("website_testimonials")
+    .update({
+      status,
+      featured,
+      published_at: status === "published" ? new Date().toISOString() : null,
+    })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  await writeAudit({ actor: profile, action: "testimonial_moderated", entityType: "website_testimonials", entityId: id, newValue: status });
+  revalidatePath("/");
+  revalidatePath("/reviews");
+  revalidatePath("/website/reviews");
 }

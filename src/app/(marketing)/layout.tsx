@@ -3,7 +3,7 @@ import { ConsentAnalytics } from "@/components/site/consent-analytics";
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="site min-h-screen bg-[#0c0f12] text-[#f4efe6]">
+    <div className="site min-h-screen bg-[#f4f8fb] text-[#12324d]">
       <SiteHeader />
       {children}
       <SiteFooter />

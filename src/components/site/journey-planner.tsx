@@ -19,10 +19,10 @@ export function JourneyPlanner({
 
   if (state?.ok) {
     return (
-      <div className="border border-white/15 bg-white/5 p-8 md:p-12">
-        <p className="text-[11px] uppercase tracking-[0.28em] text-[#c4a574]">Enquiry received</p>
+      <div className="site-card bg-[#e8f4fb] p-8 md:p-12">
+        <p className="text-[11px] uppercase tracking-[0.28em] text-[#3d7ab5]">Enquiry received</p>
         <h3 className="mt-3 font-serif text-4xl">The desk has your brief.</h3>
-        <p className="mt-4 max-w-xl text-white/70">
+        <p className="mt-4 max-w-xl text-[#4a5866]">
           Thank you. A follow-up is created in the operations desk. We do not promise a fixed reply time unless the business has published one.
         </p>
       </div>
@@ -30,11 +30,11 @@ export function JourneyPlanner({
   }
 
   return (
-    <form action={action} className="border border-white/10 bg-black/20 p-6 md:p-10">
+    <form action={action} className="site-card bg-white p-6 md:p-10">
       <input type="hidden" name="landing_page" value={landingPath} />
-      <ol className="mb-8 flex gap-6 text-[11px] uppercase tracking-[0.2em] text-white/40">
+      <ol className="mb-8 flex gap-6 text-[11px] uppercase tracking-[0.2em] text-[#8a96a3]">
         {STEPS.map((label, index) => (
-          <li key={label} className={index === step ? "text-[#c4a574]" : ""}>
+          <li key={label} className={index === step ? "text-[#3d7ab5]" : ""}>
             0{index + 1} {label}
           </li>
         ))}
@@ -43,7 +43,7 @@ export function JourneyPlanner({
       <div className={step === 0 ? "grid gap-4 md:grid-cols-2" : "hidden"}>
         <Field label="Destination" name="destination" defaultValue={destination} />
         <label className="block">
-          <span className="mb-1 block text-[11px] uppercase tracking-[0.16em] text-white/50">Trip type</span>
+          <span className="mb-1 block text-[11px] uppercase tracking-[0.16em] text-[#6b7a88]">Trip type</span>
           <select name="trip_type" defaultValue={defaultTripType ?? ""} className="site-input">
             <option value="">Not specified</option>
             <option value="private">Private</option>
@@ -57,12 +57,12 @@ export function JourneyPlanner({
 
       <div className={step === 1 ? "grid gap-4 md:grid-cols-2" : "hidden"}>
         <Field label="Preferred start" name="preferred_start" type="date" />
-        <label className="flex items-end gap-2 text-sm text-white/70">
-          <input type="checkbox" name="flexible_dates" className="accent-[#c4a574]" />
+        <label className="flex items-end gap-2 text-sm text-[#4a5866]">
+          <input type="checkbox" name="flexible_dates" className="accent-[#4f8fc4]" />
           Dates are flexible
         </label>
         <div className="md:col-span-2">
-          <label className="mb-1 block text-[11px] uppercase tracking-[0.16em] text-white/50">Special requirements</label>
+          <label className="mb-1 block text-[11px] uppercase tracking-[0.16em] text-[#6b7a88]">Special requirements</label>
           <textarea name="notes" rows={4} className="site-input" placeholder="Pacing, accessibility, celebrations, or anything the desk should know." />
         </div>
       </div>
@@ -72,20 +72,20 @@ export function JourneyPlanner({
         <Field label="Phone / WhatsApp" name="phone" required={step === 2} />
         <Field label="Email" name="email" type="email" />
         <label className="block">
-          <span className="mb-1 block text-[11px] uppercase tracking-[0.16em] text-white/50">Preferred contact</span>
+          <span className="mb-1 block text-[11px] uppercase tracking-[0.16em] text-[#6b7a88]">Preferred contact</span>
           <select name="communication_preference" className="site-input">
             <option value="whatsapp">WhatsApp</option>
             <option value="phone">Phone</option>
             <option value="email">Email</option>
           </select>
         </label>
-        <label className="md:col-span-2 flex items-start gap-2 text-sm text-white/70">
-          <input type="checkbox" name="consent" required={step === 2} className="mt-1 accent-[#c4a574]" />
+        <label className="md:col-span-2 flex items-start gap-2 text-sm text-[#4a5866]">
+          <input type="checkbox" name="consent" required={step === 2} className="mt-1 accent-[#4f8fc4]" />
           I agree to be contacted about this enquiry.
         </label>
       </div>
 
-      {state?.error ? <p className="mt-4 text-sm text-red-300">{state.error}</p> : null}
+      {state?.error ? <p className="mt-4 text-sm text-red-600">{state.error}</p> : null}
 
       <div className="mt-8 flex flex-wrap gap-3">
         {step > 0 ? (
@@ -122,7 +122,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[11px] uppercase tracking-[0.16em] text-white/50">{label}</span>
+      <span className="mb-1 block text-[11px] uppercase tracking-[0.16em] text-[#6b7a88]">{label}</span>
       <input name={name} type={type} required={required} defaultValue={defaultValue} className="site-input" />
     </label>
   );

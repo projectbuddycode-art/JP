@@ -8,7 +8,9 @@ export const instant = false;
 export default async function WebsiteContentPage() {
   const { supabase } = await requirePermission("content.publish");
   const { data: home } = await supabase.from("website_pages").select("*").eq("page_key", "home").maybeSingle();
+  const { data: about } = await supabase.from("website_pages").select("*").eq("page_key", "about").maybeSingle();
   const content = { ...DEFAULT_HOME, ...((home?.content ?? {}) as Record<string, string>) };
+  const aboutContent = (about?.content ?? {}) as Record<string, string>;
   const { data: articles } = await supabase.from("website_articles").select("*").order("updated_at", { ascending: false });
   const { data: destinations } = await supabase.from("website_destinations").select("*").order("name");
   return (
@@ -28,6 +30,18 @@ export default async function WebsiteContentPage() {
           <div><Label>SEO title</Label><Input name="seo_title" defaultValue={home?.seo_title ?? ""} /></div>
           <div><Label>SEO description</Label><Textarea name="seo_description" defaultValue={home?.seo_description ?? ""} rows={2} /></div>
           <Button type="submit">Publish homepage copy</Button>
+        </form>
+      </Card>
+      <Card className="mt-6">
+        <h2 className="font-serif text-xl">About page</h2>
+        <form action={saveWebsitePageAction} className="mt-4 space-y-3">
+          <input type="hidden" name="page_key" value="about" />
+          <div><Label>Brand story</Label><Textarea name="body" rows={5} defaultValue={aboutContent.body ?? ""} /></div>
+          <div><Label>Mission</Label><Textarea name="mission" rows={3} defaultValue={aboutContent.mission ?? ""} /></div>
+          <div><Label>Travel philosophy</Label><Textarea name="philosophy" rows={3} defaultValue={aboutContent.philosophy ?? ""} /></div>
+          <div><Label>Verified statistic one (optional)</Label><Input name="verifiedStatOne" defaultValue={aboutContent.verifiedStatOne ?? ""} placeholder="Leave blank unless the owner has verified this figure" /></div>
+          <div><Label>Verified statistic two (optional)</Label><Input name="verifiedStatTwo" defaultValue={aboutContent.verifiedStatTwo ?? ""} /></div>
+          <Button type="submit">Publish about copy</Button>
         </form>
       </Card>
       <Card className="mt-6">

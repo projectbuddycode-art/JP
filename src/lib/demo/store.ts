@@ -1,4 +1,6 @@
 import { DEMO_OWNER_ID } from "@/lib/auth/demo-token";
+import { demoPublishedPackages } from "@/lib/demo/public-packages";
+import { DESTINATION_PROFILES, IMAGES } from "@/lib/site/media";
 
 const now = new Date();
 const iso = (days: number) => new Date(now.getTime() + days * 86_400_000).toISOString();
@@ -80,12 +82,7 @@ export function createDemoStore(email: string) {
       { id: "l2", contact_id: "c2", stage_id: "s1", owner_id: "partner-demo", full_name: "Rohit Mehta", phone_e164: "+919822223331", email: "rohit.demo@example.com", destination: "Ladakh", source: "website_form", travellers: 2, budget_max: 120000, estimated_value: 98000, currency: "INR", priority: "normal", next_follow_up_at: iso(-1), last_interaction_at: iso(-2), created_at: iso(-2), received_at: iso(-2), archived_at: null, is_test: false },
       { id: "l3", contact_id: "c3", stage_id: "s10", owner_id: DEMO_OWNER_ID, full_name: "Priya Nair", phone_e164: "+919833334441", email: "priya.demo@example.com", destination: "Manali", source: "referral", travellers: 6, budget_max: 90000, estimated_value: 87000, currency: "INR", priority: "normal", last_interaction_at: iso(-3), created_at: iso(-20), archived_at: null, is_test: false },
     ],
-    packages: [
-      { id: "p1", name: "Spiti Valley Circuit", slug: "spiti-valley-circuit", destination: "Spiti Valley", region: "Himachal Pradesh", short_description: "Kaza, Key Monastery, and Chandratal.", duration_days: 8, price_per_person: 42500, currency: "INR", status: "published", website_status: "published", price_visibility: "starting_from", trip_type: "group", cover_image_url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80", inclusions: "Stay, breakfast, permit assistance", exclusions: "Flights", accommodation: "Hotels and homestays as published for the departure", transport: "Road transfer as listed on the package", published_at: iso(-20), itinerary: [{ day: 1, location: "Manali", title: "Arrive and brief", description: "Meet the travel desk notes for pickup and overnight." }, { day: 2, location: "Kaza", title: "High-valley drive", description: "Pace for acclimatisation on the published route." }, { day: 3, location: "Key Monastery", title: "Monastery road", description: "A monastery visit as listed on the itinerary." }, { day: 4, location: "Chandratal approach", title: "Lake approach", description: "Included when the season note on the package allows." }] },
-      { id: "p2", name: "Ladakh Road Trip", slug: "ladakh-road-trip", destination: "Ladakh", short_description: "Leh, Nubra, Pangong with acclimatisation.", duration_days: 9, price_per_person: 48900, currency: "INR", status: "published", website_status: "published", price_visibility: "starting_from", trip_type: "private", cover_image_url: "https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?auto=format&fit=crop&w=1600&q=80", published_at: iso(-18) },
-      { id: "p3", name: "Manali Weekend Escape", slug: "manali-weekend-escape", destination: "Manali", short_description: "Solang and Old Manali weekend.", duration_days: 3, price_per_person: 14500, currency: "INR", status: "published", website_status: "published", price_visibility: "starting_from", trip_type: "group", cover_image_url: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1600&q=80", published_at: iso(-10) },
-      { id: "p4", name: "Unpublished draft circuit", slug: "unpublished-draft-circuit", destination: "Spiti Valley", short_description: "Internal draft.", duration_days: 7, price_per_person: 99999, currency: "INR", status: "draft", website_status: "draft" },
-    ],
+    packages: demoPublishedPackages(iso),
     bookings: [
       { id: "b1", contact_id: "c3", lead_id: "l3", package_id: "p3", departure_id: "dep1", campaign_id: null, booking_reference: "NR-DEMO-001", travel_start: "2027-06-10", confirmed_amount: 87000, amount_paid: 20000, amount_received: 20000, currency: "INR", booking_status: "confirmed", payment_status: "deposit", created_at: iso(-5) },
     ],
@@ -231,19 +228,55 @@ export function createDemoStore(email: string) {
         seo_title: "Northridge — Himalayan journeys",
         seo_description: "Published itineraries for Spiti, Manali, and Ladakh.",
         content: {
-          heroHeading: "THE HIMALAYAS ARE CALLING.",
-          heroSubheading: "Journeys beyond the ordinary. Experiences that stay with you.",
+          heroHeading: "Find Your Next Great Adventure.",
+          heroSubheading: "Discover unforgettable journeys, meet like-minded travellers and explore India's most extraordinary destinations.",
           heroSupporting:
-            "Discover extraordinary journeys through Spiti, Ladakh and the mountains of Himachal — thoughtfully planned, personally guided and built around the way you love to travel.",
-          ctaPrimary: "Explore journeys",
-          ctaSecondary: "Design your journey",
+            "Published Himalayan trips through Spiti, Ladakh and Manali — planned from one travel desk, confirmed only after a real enquiry.",
+          ctaPrimary: "Explore trips",
+          ctaSecondary: "Plan your trip",
         },
       },
     ],
     website_destinations: [
-      { id: "d1", name: "Spiti Valley", slug: "spiti-valley", summary: "High-altitude villages, monasteries, and long Himalayan horizons.", overview: "Spiti journeys are planned around season and acclimatisation. Road and permit notes are added by the desk when verified.", status: "published", hero_image_url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80", highlights: [], faqs: [] },
-      { id: "d2", name: "Manali", slug: "manali", summary: "A mountain gateway for weekends and longer Himalayan road trips.", overview: "Manali itineraries listed here are published packages from the catalogue.", status: "published", hero_image_url: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1600&q=80", highlights: [], faqs: [] },
-      { id: "d3", name: "Ladakh", slug: "ladakh", summary: "High desert roads, lakes, and paced acclimatisation.", overview: "Ladakh trips are the published packages from the operations desk. Availability is confirmed after conversation.", status: "published", hero_image_url: "https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?auto=format&fit=crop&w=1600&q=80", highlights: [], faqs: [] },
+      {
+        id: "d1",
+        name: "Spiti Valley",
+        slug: "spiti-valley",
+        summary: DESTINATION_PROFILES["spiti-valley"].pull,
+        overview: DESTINATION_PROFILES["spiti-valley"].overview,
+        status: "published",
+        seo_title: "Spiti Valley tours from Northridge",
+        seo_description: "Published Spiti Valley journeys from the Northridge travel desk. Enquire to confirm season, permits and dates.",
+        hero_image_url: IMAGES.spiti,
+        highlights: DESTINATION_PROFILES["spiti-valley"].experiences,
+        faqs: DESTINATION_PROFILES["spiti-valley"].faqs,
+      },
+      {
+        id: "d2",
+        name: "Manali",
+        slug: "manali",
+        summary: DESTINATION_PROFILES.manali.pull,
+        overview: DESTINATION_PROFILES.manali.overview,
+        status: "published",
+        seo_title: "Manali holidays and Himalayan gateway trips",
+        seo_description: "Published Manali stays and gateway journeys from Northridge. Enquire to confirm the next departure.",
+        hero_image_url: IMAGES.manali,
+        highlights: DESTINATION_PROFILES.manali.experiences,
+        faqs: DESTINATION_PROFILES.manali.faqs,
+      },
+      {
+        id: "d3",
+        name: "Ladakh",
+        slug: "ladakh",
+        summary: DESTINATION_PROFILES.ladakh.pull,
+        overview: DESTINATION_PROFILES.ladakh.overview,
+        status: "published",
+        seo_title: "Ladakh road trips from Northridge",
+        seo_description: "Published Ladakh itineraries from the Northridge desk. Leh, Nubra and Pangong appear only when written on the package.",
+        hero_image_url: IMAGES.ladakh,
+        highlights: DESTINATION_PROFILES.ladakh.experiences,
+        faqs: DESTINATION_PROFILES.ladakh.faqs,
+      },
     ],
     website_articles: [
       {
@@ -254,12 +287,14 @@ export function createDemoStore(email: string) {
         body: "A published itinerary is a starting brief. Dates, acclimatisation, and vehicle plans are confirmed after an enquiry is reviewed in the CRM.\n\nThis article does not replace official permit rules or road-opening notices.",
         category: "Planning",
         destination_slug: "ladakh",
+        cover_image_url: IMAGES.roads,
         status: "published",
         author_name: "Northridge travel desk",
         published_at: iso(-4),
       },
     ],
     website_testimonials: [],
+    website_offers: [],
     website_events: [],
     website_revisions: [],
     package_versions: [],

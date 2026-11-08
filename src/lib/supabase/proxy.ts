@@ -14,6 +14,8 @@ function isPublicPath(path: string) {
     path.startsWith("/proposal/") ||
     path.startsWith("/destinations") ||
     path.startsWith("/trips") ||
+    path.startsWith("/group-trips") ||
+    path.startsWith("/reviews") ||
     path.startsWith("/custom-trip") ||
     path.startsWith("/about") ||
     path.startsWith("/travel-guides") ||
@@ -23,6 +25,7 @@ function isPublicPath(path: string) {
     path.startsWith("/cancellation-policy") ||
     path.startsWith("/sitemap") ||
     path.startsWith("/robots") ||
+    path.startsWith("/llms.txt") ||
     path.startsWith("/api/webhooks") ||
     path.startsWith("/api/cron") ||
     path.startsWith("/api/automation") ||

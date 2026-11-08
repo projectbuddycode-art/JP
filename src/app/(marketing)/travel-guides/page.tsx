@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listPublishedArticles } from "@/lib/site/catalog";
+import { listPublishedArticles, readingMinutes } from "@/lib/site/catalog";
 import { IMAGES } from "@/lib/site/media";
 import { pageMetadata } from "@/lib/site/seo";
 
@@ -7,7 +7,7 @@ export const instant = false;
 
 export async function generateMetadata() {
   return pageMetadata({
-    title: "Travel journal",
+    title: "Travel stories",
     description: "Published planning notes from the Northridge travel desk. Not a substitute for permits or live road advice.",
     path: "/travel-guides",
   });
@@ -16,23 +16,28 @@ export async function generateMetadata() {
 export default async function GuidesPage() {
   const articles = await listPublishedArticles();
   return (
-    <main className="mx-auto max-w-6xl px-6 pb-24 pt-36">
-      <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">Travel journal</p>
-      <h1 className="mt-4 font-serif text-5xl md:text-7xl">Notes from the desk</h1>
-      <p className="mt-4 max-w-2xl text-white/65">Articles are drafted in the CRM and appear here only when published.</p>
-      <div className="mt-16 grid gap-10 md:grid-cols-2">
-        {articles.length ? articles.map((article, index) => (
-          <Link key={article.id} href={`/travel-guides/${article.slug}`} className={`group ${index === 0 ? "md:col-span-2" : ""}`}>
-            <div
-              className={`bg-cover bg-center transition duration-700 group-hover:scale-[1.02] ${index === 0 ? "h-80" : "h-56"}`}
-              style={{ backgroundImage: `url(${article.cover_image_url || IMAGES.village})` }}
-            />
-            <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-[#c4a574]">{article.category || "Guide"}</p>
-            <h2 className="mt-2 font-serif text-3xl md:text-4xl">{article.title}</h2>
-            <p className="mt-2 text-white/60">{article.excerpt}</p>
+    <main className="mx-auto max-w-6xl px-6 pb-24 pt-10">
+      <p className="site-kicker">Travel stories</p>
+      <h1 className="mt-3 font-serif text-5xl md:text-6xl">Notes from the desk</h1>
+      <p className="mt-4 max-w-2xl text-[#5d6d7a]">Articles are drafted in the CRM and appear here only when published.</p>
+      <div className="mt-12 grid gap-6 md:grid-cols-2">
+        {articles.length ? articles.map((article) => (
+          <Link key={article.id} href={`/travel-guides/${article.slug}`} className="site-card group">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={article.cover_image_url || IMAGES.village} alt="" className="h-56 w-full object-cover" />
+            <div className="p-6">
+              <p className="site-kicker">{article.category || "Guide"}</p>
+              <h2 className="mt-2 font-serif text-3xl">{article.title}</h2>
+              <p className="mt-2 text-[#5d6d7a]">{article.excerpt}</p>
+              <p className="mt-3 text-xs text-[#8a96a3]">
+                {article.author_name || "Northridge desk"} · {readingMinutes(`${article.excerpt ?? ""} ${article.body ?? ""}`)} min read
+                {article.destination_slug ? ` · ${article.destination_slug}` : ""}
+              </p>
+              <span className="mt-4 inline-block text-sm font-semibold text-[#f26b4e]">Read article</span>
+            </div>
           </Link>
         )) : (
-          <p className="text-white/50">No guides are published yet.</p>
+          <p className="text-[#5d6d7a]">No guides are published yet.</p>
         )}
       </div>
     </main>

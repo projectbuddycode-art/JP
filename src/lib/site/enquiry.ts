@@ -21,6 +21,18 @@ export const enquirySchema = z.object({
   landing_page: z.string().optional(),
   flexible_dates: z.string().optional(),
   communication_preference: z.string().optional(),
+  departure_id: z.string().optional(),
+});
+
+export const reviewSchema = z.object({
+  traveller_name: z.string().min(1).max(120),
+  quote: z.string().min(12).max(2000),
+  trip_name: z.string().optional(),
+  destination: z.string().optional(),
+  rating: z.coerce.number().int().min(1).max(5).optional(),
+  photo_url: z.string().url().optional().or(z.literal("")),
+  consent: z.literal("on"),
+  photo_permission: z.string().optional(),
 });
 
 export const newsletterSchema = z.object({

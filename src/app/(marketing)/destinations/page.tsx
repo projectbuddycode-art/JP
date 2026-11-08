@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listPublishedDestinations } from "@/lib/site/catalog";
+import { listPublishedDestinations, listPublishedPackages } from "@/lib/site/catalog";
 import { DESTINATION_PROFILES, coverForDestination } from "@/lib/site/media";
 import { pageMetadata } from "@/lib/site/seo";
 
@@ -8,7 +8,8 @@ export const instant = false;
 export async function generateMetadata() {
   return pageMetadata({
     title: "Destinations",
-    description: "Spiti Valley, Manali, and Ladakh — destinations with published Northridge itineraries.",
+    description: "Destination pages for Spiti Valley, Ladakh and Manali — with published Northridge itineraries, photography and enquiry forms.",
+    keywords: ["Spiti Valley", "Ladakh", "Manali", "Himachal tour"],
     path: "/destinations",
   });
 }
@@ -20,38 +21,33 @@ const FALLBACK = [
 ];
 
 export default async function DestinationsPage() {
-  const destinations = await listPublishedDestinations();
+  const [destinations, packages] = await Promise.all([listPublishedDestinations(), listPublishedPackages()]);
   const rows = destinations.length ? destinations : FALLBACK;
   return (
-    <main className="px-6 pb-24 pt-32">
+    <main className="px-6 pb-24 pt-10">
       <div className="mx-auto max-w-6xl">
-        <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">Destinations</p>
-        <h1 className="mt-4 font-serif text-5xl md:text-7xl">The Himalayas, as we travel them.</h1>
-        <p className="mt-5 max-w-2xl text-white/65">
+        <p className="site-kicker">Destinations</p>
+        <h1 className="mt-3 font-serif text-5xl md:text-6xl">The Himalayas, as we travel them.</h1>
+        <p className="mt-5 max-w-2xl text-[#5d6d7a]">
           Additional destinations can be published from the CRM without a code change. We do not invent season or permit facts here.
         </p>
-        <div className="mt-16 space-y-8">
-          {rows.map((item, index) => (
-            <Link
-              key={item.slug}
-              href={`/destinations/${item.slug}`}
-              className="group grid min-h-[380px] overflow-hidden md:grid-cols-12"
-            >
-              <div className={`relative min-h-[280px] md:col-span-7 ${index % 2 ? "md:order-2" : ""}`}>
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-[1.04]"
-                  style={{ backgroundImage: `url(${coverForDestination(item.slug)})` }}
-                />
-              </div>
-              <div className={`flex flex-col justify-end bg-[#10130f] p-8 md:col-span-5 md:p-12 ${index % 2 ? "md:order-1" : ""}`}>
-                <p className="text-[11px] uppercase tracking-[0.24em] text-[#c4a574]">
-                  {DESTINATION_PROFILES[item.slug]?.kicker ?? "Destination"}
-                </p>
-                <h2 className="mt-3 font-serif text-4xl">{item.name}</h2>
-                <p className="mt-3 text-sm text-white/65">{item.summary || DESTINATION_PROFILES[item.slug]?.pull}</p>
-              </div>
-            </Link>
-          ))}
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {rows.map((item) => {
+            const count = packages.filter((pack) => pack.destination.toLowerCase().includes(item.name.toLowerCase().split(" ")[0])).length;
+            return (
+              <Link key={item.slug} href={`/destinations/${item.slug}`} className="site-card group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={coverForDestination(item.slug)} alt={item.name} className="h-56 w-full object-cover transition duration-700 group-hover:scale-[1.04]" />
+                <div className="p-6">
+                  <p className="site-kicker">{DESTINATION_PROFILES[item.slug]?.kicker ?? "Destination"}</p>
+                  <h2 className="mt-2 font-serif text-3xl">{item.name}</h2>
+                  <p className="mt-3 text-sm text-[#5d6d7a]">{item.summary || DESTINATION_PROFILES[item.slug]?.pull}</p>
+                  {count ? <p className="mt-3 text-sm font-medium text-[#2f9ed8]">{count} published trips</p> : null}
+                  <span className="mt-5 inline-block text-sm font-semibold text-[#f26b4e]">Explore</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </main>

@@ -32,3 +32,46 @@ export type PublicPackage = {
   og_image_url?: string | null;
   published_at?: string | null;
 };
+
+export type PublicOffer = {
+  id: string;
+  title: string;
+  discount_label?: string | null;
+  coupon_code?: string | null;
+  valid_until?: string | null;
+  applicable_trips?: string | null;
+  banner_image_url?: string | null;
+  cta_label?: string | null;
+  cta_href?: string | null;
+  status?: string | null;
+};
+
+export type PublicTestimonial = {
+  id: string;
+  quote: string;
+  attribution?: string | null;
+  traveller_name?: string | null;
+  trip_name?: string | null;
+  destination?: string | null;
+  rating?: number | null;
+  photo_url?: string | null;
+  featured?: boolean | null;
+  package_id?: string | null;
+  published_at?: string | null;
+  permission_recorded?: boolean | null;
+};
+
+export type PublicDeparture = {
+  id: string;
+  name: string;
+  package_id?: string | null;
+  destination?: string | null;
+  start_date: string;
+  end_date?: string | null;
+  capacity?: number | null;
+  status: string;
+  start_location?: string | null;
+  package?: PublicPackage | null;
+  seats_remaining?: number | null;
+  duration_days?: number | null;
+};

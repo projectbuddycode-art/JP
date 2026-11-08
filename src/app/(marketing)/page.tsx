@@ -1,20 +1,28 @@
 import Link from "next/link";
 import { CinematicHero } from "@/components/site/cinematic-hero";
 import { EnquiryForm } from "@/components/site/enquiry-form";
-import { JourneyPlanner } from "@/components/site/journey-planner";
+import { FaqList } from "@/components/site/faq-list";
+import { JsonLd } from "@/components/site/json-ld";
+import { OfferBanner } from "@/components/site/offer-banner";
 import { Reveal } from "@/components/site/reveal";
+import { ReviewCard } from "@/components/site/review-card";
+import { TravellerGallery } from "@/components/site/traveller-gallery";
 import { TripDiscovery } from "@/components/site/trip-discovery";
+import { GroupTripCard } from "@/components/site/group-trip-card";
 import {
   getWebsitePage,
   listApprovedTestimonials,
+  listPublicDepartures,
   listPublishedArticles,
   listPublishedDestinations,
+  listPublishedOffers,
   listPublishedPackages,
+  readingMinutes,
 } from "@/lib/site/catalog";
-import { DEFAULT_HOME, HOW_IT_WORKS, SIGNATURE, WHY_US } from "@/lib/site/defaults";
-import { formatItinerary } from "@/lib/site/itinerary";
+import { DEFAULT_HOME, HOW_IT_WORKS, WHY_US } from "@/lib/site/defaults";
+import { PROCESS_FAQS } from "@/lib/site/editorial";
 import { DESTINATION_PROFILES, IMAGES, coverForDestination } from "@/lib/site/media";
-import { breadcrumbJsonLd, organizationJsonLd, pageMetadata } from "@/lib/site/seo";
+import { breadcrumbJsonLd, faqJsonLd, howToEnquireJsonLd, itemListJsonLd, organizationJsonLd, pageMetadata, websiteJsonLd } from "@/lib/site/seo";
 
 export const instant = false;
 
@@ -26,6 +34,7 @@ export async function generateMetadata() {
     description: page?.seo_description || content.heroSupporting || content.heroSubheading || DEFAULT_HOME.heroSupporting,
     path: "/",
     image: DEFAULT_HOME.heroImage,
+    keywords: ["Spiti Valley tour", "Ladakh road trip", "Manali holiday", "Himalayan travel", "Northridge"],
   });
 }
 
@@ -35,32 +44,43 @@ const FALLBACK_DESTINATIONS = [
   { slug: "manali", name: "Manali", summary: DESTINATION_PROFILES.manali.pull },
 ];
 
+const ACCENTS = ["bg-[#e8f4fb]", "bg-[#fff4e8]", "bg-[#eaf7f1]", "bg-[#ffece7]"];
+
 export default async function HomePage() {
-  const [page, packages, destinations, testimonials, articles] = await Promise.all([
+  const [page, packages, destinations, testimonials, articles, offers, departures] = await Promise.all([
     getWebsitePage("home"),
     listPublishedPackages(),
     listPublishedDestinations(),
     listApprovedTestimonials(),
     listPublishedArticles(),
+    listPublishedOffers(),
+    listPublicDepartures(),
   ]);
   const content = { ...DEFAULT_HOME, ...((page?.content ?? {}) as Record<string, string>) };
-  const featuredItinerary = packages.find((pack) => formatItinerary(pack.itinerary).length > 0) ?? packages[0];
-  const itinerary = featuredItinerary ? formatItinerary(featuredItinerary.itinerary).slice(0, 6) : [];
   const destRows = destinations.length ? destinations : FALLBACK_DESTINATIONS;
-  const storyFrames = [
-    { image: IMAGES.roads, caption: "Mountain roads" },
-    { image: IMAGES.chandratal, caption: "High-altitude lakes" },
-    { image: IMAGES.village, caption: "Remote villages" },
-    { image: IMAGES.monastery, caption: "Monasteries" },
+  const gallery = [
+    ...DESTINATION_PROFILES["spiti-valley"].gallery.map((src) => ({ src, category: "spiti", alt: "Spiti" })),
+    ...DESTINATION_PROFILES.ladakh.gallery.map((src) => ({ src, category: "ladakh", alt: "Ladakh" })),
+    ...DESTINATION_PROFILES.manali.gallery.map((src) => ({ src, category: "manali", alt: "Manali" })),
+    { src: IMAGES.roads, category: "road", alt: "Road trip" },
+    { src: IMAGES.village, category: "group", alt: "Group travel" },
   ];
 
   return (
     <div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd([{ name: "Home", path: "/" }])) }}
-      />
+      <JsonLd data={organizationJsonLd()} />
+      <JsonLd data={websiteJsonLd()} />
+      <JsonLd data={howToEnquireJsonLd()} />
+      <JsonLd data={faqJsonLd(PROCESS_FAQS)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }])} />
+      {packages.length ? (
+        <JsonLd
+          data={itemListJsonLd(
+            "Published Himalayan journeys",
+            packages.map((pack) => ({ name: pack.name, path: `/trips/${pack.slug}` })),
+          )}
+        />
+      ) : null}
 
       <CinematicHero
         heading={content.heroHeading}
@@ -69,191 +89,155 @@ export default async function HomePage() {
         image={content.heroImage || DEFAULT_HOME.heroImage}
         primaryLabel={content.ctaPrimary}
         secondaryLabel={content.ctaSecondary}
+        destinations={destRows.map((item) => ({ slug: item.slug, name: item.name }))}
       />
 
-      <section id="discover" className="px-6 py-28">
+      <OfferBanner offers={offers} />
+
+      <section id="discover" className="px-6 py-20">
         <Reveal className="mx-auto max-w-6xl">
-          <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">Travel discovery</p>
-          <h2 className="mt-4 max-w-3xl font-serif text-4xl md:text-6xl">Landscapes we actually operate.</h2>
-          <div className="mt-16 space-y-8">
+          <p className="site-kicker">Popular destinations</p>
+          <h2 className="mt-3 font-serif text-4xl md:text-5xl">Landscapes we actually operate.</h2>
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
             {destRows.map((item, index) => {
               const profile = DESTINATION_PROFILES[item.slug];
-              const image = coverForDestination(item.slug);
-              const reverse = index % 2 === 1;
+              const count = packages.filter((pack) => pack.destination.toLowerCase().includes(item.name.toLowerCase().split(" ")[0])).length;
               return (
-                <Link
-                  key={item.slug}
-                  href={`/destinations/${item.slug}`}
-                  className={`group grid min-h-[420px] overflow-hidden md:grid-cols-12 ${reverse ? "md:direction-rtl" : ""}`}
-                >
-                  <div className={`relative md:col-span-7 ${reverse ? "md:order-2" : ""}`}>
-                    <div
-                      className="absolute inset-0 min-h-[320px] bg-cover bg-center transition duration-700 group-hover:scale-[1.04]"
-                      style={{ backgroundImage: `url(${image})` }}
-                    />
+                <article key={item.slug} className="site-card flex flex-col">
+                  <div className="relative h-56 overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={coverForDestination(item.slug)} alt={item.name} className="h-full w-full object-cover" />
+                    <span className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold ${ACCENTS[index % ACCENTS.length]}`}>
+                      {profile?.kicker ?? "Destination"}
+                    </span>
                   </div>
-                  <div className={`flex flex-col justify-end bg-[#10130f] p-8 md:col-span-5 md:p-12 ${reverse ? "md:order-1" : ""}`}>
-                    <p className="text-[11px] uppercase tracking-[0.28em] text-[#c4a574]">{profile?.kicker ?? "Destination"}</p>
-                    <h3 className="mt-3 font-serif text-4xl md:text-5xl">{item.name}</h3>
-                    <p className="mt-4 text-sm leading-relaxed text-white/65">{item.summary || profile?.pull}</p>
-                    <span className="mt-6 text-sm text-[#c4a574]">Explore destination</span>
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="font-serif text-3xl">{item.name}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-[#5d6d7a]">{item.summary || profile?.pull}</p>
+                    {count ? <p className="mt-3 text-sm font-medium text-[#2f9ed8]">{count} published trip{count === 1 ? "" : "s"}</p> : null}
+                    <Link href={`/destinations/${item.slug}`} className="site-btn-gold mt-6 w-fit">Explore</Link>
                   </div>
-                </Link>
+                </article>
               );
             })}
           </div>
         </Reveal>
       </section>
 
-      <section className="bg-[#10130f] py-28">
+      <section className="bg-white py-20">
         <Reveal className="mx-auto max-w-6xl px-6">
-          <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">Signature journeys</p>
-          <h2 className="mt-4 font-serif text-4xl md:text-5xl">Published from the travel desk.</h2>
-          <p className="mt-4 max-w-2xl text-white/55">These cards are live CRM packages. Unpublished itineraries never appear here.</p>
-          <div className="mt-12">
-            {packages.length ? <TripDiscovery packages={packages} /> : <p className="text-white/50">No trips are published yet.</p>}
-          </div>
-        </Reveal>
-      </section>
-
-      <section className="px-6 py-28">
-        <Reveal className="mx-auto grid max-w-6xl gap-16 lg:grid-cols-[1.1fr_0.9fr]">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">A more personal way to travel</p>
-            <h2 className="mt-4 font-serif text-4xl md:text-6xl">Built around how you like to travel.</h2>
-            <p className="mt-6 max-w-xl text-white/65">
-              Northridge is the public face of one operations desk. The website, the catalogue, and the follow-up live in the same system — so what you read here is what the team actually works from.
-            </p>
-          </div>
-          <div className="space-y-8">
-            {WHY_US.map((item) => (
-              <div key={item.title} className="border-t border-white/15 pt-6">
-                <h3 className="font-serif text-2xl">{item.title}</h3>
-                <p className="mt-2 text-white/60">{item.body}</p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </section>
-
-      <section className="relative">
-        {storyFrames.map((frame) => (
-          <div key={frame.caption} className="relative min-h-[70vh] overflow-hidden">
-            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${frame.image})` }} />
-            <div className="absolute inset-0 bg-black/35" />
-            <div className="relative mx-auto flex min-h-[70vh] max-w-6xl items-end px-6 pb-16">
-              <p className="font-serif text-4xl text-[#f4efe6] md:text-6xl">{frame.caption}</p>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="site-kicker">Trending trips</p>
+              <h2 className="mt-3 font-serif text-4xl">Published from the travel desk.</h2>
             </div>
+            <Link href="/trips" className="site-btn-ghost">View all packages</Link>
           </div>
-        ))}
+          <div className="mt-10">
+            {packages.length ? <TripDiscovery packages={packages.slice(0, 9)} departures={departures} /> : <p className="text-[#5d6d7a]">No trips are published yet.</p>}
+          </div>
+        </Reveal>
       </section>
 
-      {featuredItinerary ? (
-        <section className="px-6 py-28">
+      {departures.length ? (
+        <section className="px-6 py-20">
           <Reveal className="mx-auto max-w-6xl">
-            <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">Featured itinerary</p>
-            <h2 className="mt-4 font-serif text-4xl md:text-5xl">{featuredItinerary.name}</h2>
-            <p className="mt-3 text-white/55">
-              {featuredItinerary.destination}
-              {featuredItinerary.duration_days ? ` · ${featuredItinerary.duration_days} days` : ""}
-              {featuredItinerary.accommodation ? ` · ${featuredItinerary.accommodation}` : ""}
-            </p>
-            {itinerary.length ? (
-              <ol className="mt-12 space-y-0 border-l border-white/15">
-                {itinerary.map((day) => (
-                  <li key={`${day.day}-${day.title}`} className="relative py-6 pl-8">
-                    <span className="absolute top-8 -left-[5px] h-2.5 w-2.5 rounded-full bg-[#c4a574]" />
-                    <p className="text-[11px] uppercase tracking-[0.2em] text-[#c4a574]">Day {day.day}</p>
-                    <h3 className="mt-1 font-serif text-2xl">{day.title}</h3>
-                    {day.location ? <p className="text-sm text-white/50">{day.location}</p> : null}
-                    {day.body ? <p className="mt-2 max-w-2xl text-sm text-white/60">{day.body}</p> : null}
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className="mt-8 text-white/50">A day-by-day route is published on the journey page when the desk has written one.</p>
-            )}
-            <Link href={`/trips/${featuredItinerary.slug}`} className="site-btn-gold mt-10">
-              View full journey
-            </Link>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="site-kicker">Upcoming group trips</p>
+                <h2 className="mt-3 font-serif text-4xl">Scheduled departures only.</h2>
+              </div>
+              <Link href="/group-trips" className="site-btn-ghost">All group trips</Link>
+            </div>
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {departures.slice(0, 3).map((item) => <GroupTripCard key={item.id} departure={item} />)}
+            </div>
           </Reveal>
         </section>
       ) : null}
 
-      <section className="bg-[#10130f] py-28">
+      <section className="bg-[#fff8e8] py-20">
         <Reveal className="mx-auto max-w-6xl px-6">
-          <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">Why travel with us</p>
-          <h2 className="mt-4 font-serif text-4xl">The path from first look to confirmed journey</h2>
-          <ol className="mt-14 grid gap-10 md:grid-cols-5">
+          <p className="site-kicker">Why travel with us</p>
+          <h2 className="mt-3 font-serif text-4xl">Colourful, careful, and honest about what is confirmed.</h2>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {WHY_US.map((item, index) => (
+              <article key={item.title} className={`rounded-3xl p-6 ${ACCENTS[index % ACCENTS.length]}`}>
+                <h3 className="font-serif text-2xl">{item.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-[#3d5364]">{item.body}</p>
+              </article>
+            ))}
+          </div>
+          <ol className="mt-12 grid gap-4 md:grid-cols-5">
             {HOW_IT_WORKS.map((item) => (
-              <li key={item.step}>
-                <p className="text-[11px] tracking-[0.2em] text-[#c4a574]">{item.step}</p>
-                <h3 className="mt-3 font-serif text-2xl">{item.title}</h3>
-                <p className="mt-2 text-sm text-white/55">{item.body}</p>
+              <li key={item.step} className="rounded-3xl bg-white p-5 shadow-sm">
+                <p className="text-[11px] font-bold text-[#f26b4e]">{item.step}</p>
+                <h3 className="mt-2 font-serif text-xl">{item.title}</h3>
+                <p className="mt-2 text-sm text-[#5d6d7a]">{item.body}</p>
               </li>
             ))}
           </ol>
-          <div className="mt-16 grid gap-8 md:grid-cols-4">
-            {SIGNATURE.map((item) => (
-              <div key={item.title} className="border-t border-white/15 pt-5">
-                <h3 className="font-serif text-2xl text-[#c4a574]">{item.title}</h3>
-                <p className="mt-3 text-sm text-white/60">{item.body}</p>
-              </div>
-            ))}
-          </div>
         </Reveal>
       </section>
 
-      <section className="px-6 py-28">
+      <section className="px-6 py-20">
         <Reveal className="mx-auto max-w-6xl">
-          <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">Real traveller stories</p>
-          <h2 className="mt-4 font-serif text-4xl">Words we have permission to share.</h2>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="site-kicker">Traveller experiences</p>
+              <h2 className="mt-3 font-serif text-4xl">Words we have permission to share.</h2>
+            </div>
+            <Link href="/reviews" className="site-btn-ghost">Read / write a review</Link>
+          </div>
           {testimonials.length ? (
-            <div className="mt-12 grid gap-6 md:grid-cols-2">
-              {testimonials.map((item) => (
-                <blockquote key={item.id} className="border-t border-white/15 pt-8">
-                  <p className="font-serif text-3xl leading-snug">“{item.quote}”</p>
-                  <footer className="mt-4 text-sm text-white/50">
-                    {item.attribution}
-                    {item.trip_name ? ` · ${item.trip_name}` : ""}
-                  </footer>
-                </blockquote>
-              ))}
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {testimonials.slice(0, 6).map((item) => <ReviewCard key={item.id} item={item} compact />)}
             </div>
           ) : (
-            <p className="mt-8 max-w-xl text-white/55">
+            <p className="mt-8 max-w-xl text-[#5d6d7a]">
               Approved traveller stories appear here once they are published from the CRM with recorded permission. We do not invent reviews.
             </p>
           )}
         </Reveal>
       </section>
 
-      <section className="bg-[#10130f] px-6 py-28">
+      <section className="bg-white px-6 py-20">
         <Reveal className="mx-auto max-w-6xl">
-          <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">Journey planner</p>
-          <h2 className="mt-4 font-serif text-4xl md:text-5xl">Tell the desk how you want to travel.</h2>
-          <p className="mt-4 max-w-2xl text-white/55">This writes directly into the CRM. Liking a post or watching a Reel does not create a lead.</p>
-          <div className="mt-12">
-            <JourneyPlanner landingPath="/" />
+          <p className="site-kicker">Traveller gallery</p>
+          <h2 className="mt-3 font-serif text-4xl">Landscapes from the routes we publish.</h2>
+          <p className="mt-3 max-w-2xl text-sm text-[#5d6d7a]">Licensed destination photography until studio trip photographs are uploaded in the CRM.</p>
+          <div className="mt-8">
+            <TravellerGallery items={gallery} />
           </div>
         </Reveal>
       </section>
 
       {articles.length ? (
-        <section className="px-6 py-28">
+        <section className="px-6 py-20">
           <Reveal className="mx-auto max-w-6xl">
-            <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">Travel journal</p>
-            <h2 className="mt-4 font-serif text-4xl">Notes from the desk.</h2>
-            <div className="mt-12 grid gap-8 md:grid-cols-3">
-              {articles.map((article) => (
-                <Link key={article.id} href={`/travel-guides/${article.slug}`} className="group">
-                  <div
-                    className="h-56 bg-cover bg-center transition duration-700 group-hover:scale-[1.03]"
-                    style={{ backgroundImage: `url(${article.cover_image_url || IMAGES.village})` }}
-                  />
-                  <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-[#c4a574]">{article.category || "Guide"}</p>
-                  <h3 className="mt-2 font-serif text-3xl">{article.title}</h3>
-                  <p className="mt-2 text-sm text-white/60">{article.excerpt}</p>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="site-kicker">Travel stories</p>
+                <h2 className="mt-3 font-serif text-4xl">Notes from the desk.</h2>
+              </div>
+              <Link href="/travel-guides" className="site-btn-ghost">All stories</Link>
+            </div>
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {articles.slice(0, 3).map((article) => (
+                <Link key={article.id} href={`/travel-guides/${article.slug}`} className="site-card group">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={article.cover_image_url || IMAGES.village} alt="" className="h-48 w-full object-cover" />
+                  <div className="p-5">
+                    <p className="site-kicker">{article.category || "Guide"}</p>
+                    <h3 className="mt-2 font-serif text-2xl">{article.title}</h3>
+                    <p className="mt-2 text-sm text-[#5d6d7a]">{article.excerpt}</p>
+                    <p className="mt-3 text-xs text-[#8a96a3]">
+                      {article.author_name || "Northridge desk"}
+                      {` · ${readingMinutes(`${article.excerpt ?? ""} ${article.body ?? ""}`)} min read`}
+                      {article.destination_slug ? ` · ${article.destination_slug}` : ""}
+                    </p>
+                    <span className="mt-4 inline-block text-sm font-semibold text-[#f26b4e]">Read article</span>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -261,21 +245,28 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      <section className="relative min-h-[70vh] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${IMAGES.cta})` }} />
-        <div className="absolute inset-0 bg-black/45" />
-        <div className="relative mx-auto flex min-h-[70vh] max-w-4xl flex-col items-start justify-end px-6 py-24">
-          <h2 className="font-serif text-5xl md:text-7xl">Your next great story starts here.</h2>
+      <section className="px-6 py-16">
+        <Reveal className="mx-auto max-w-6xl">
+          <FaqList faqs={PROCESS_FAQS} />
+        </Reveal>
+      </section>
+
+      <section className="relative mx-6 mb-8 overflow-hidden rounded-[2.5rem]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={IMAGES.cta} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-[#12324d]/55" />
+        <div className="relative mx-auto flex min-h-[52vh] max-w-4xl flex-col items-start justify-end px-6 py-16 text-white">
+          <h2 className="font-serif text-4xl md:text-6xl">Your Next Adventure Is Waiting.</h2>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/trips" className="site-btn-gold">Explore trips</Link>
-            <Link href="/custom-trip" className="site-btn-ghost">Plan your journey</Link>
+            <Link href="/custom-trip" className="site-btn-ghost border-white text-white">Plan a custom journey</Link>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-3xl px-6 py-24">
+      <section className="mx-auto max-w-3xl px-6 py-16">
         <h2 className="font-serif text-4xl">Prefer a short form?</h2>
-        <p className="mt-3 text-white/60">Same CRM intake as the planner above.</p>
+        <p className="mt-3 text-[#5d6d7a]">Same CRM intake as Plan Your Trip.</p>
         <div className="mt-8">
           <EnquiryForm landingPath="/" />
         </div>

@@ -3,12 +3,12 @@ import { DESTINATION_COVERS, IMAGES } from "@/lib/site/media";
 export const SITE_NAME = "Northridge";
 
 export const DEFAULT_HOME = {
-  heroHeading: "THE HIMALAYAS ARE CALLING.",
-  heroSubheading: "Journeys beyond the ordinary. Experiences that stay with you.",
+  heroHeading: "Find Your Next Great Adventure.",
+  heroSubheading: "Discover unforgettable journeys, meet like-minded travellers and explore India's most extraordinary destinations.",
   heroSupporting:
-    "Discover extraordinary journeys through Spiti, Ladakh and the mountains of Himachal — thoughtfully planned, personally guided and built around the way you love to travel.",
-  ctaPrimary: "Explore journeys",
-  ctaSecondary: "Design your journey",
+    "Published Himalayan trips through Spiti, Ladakh and Manali — planned from one travel desk, confirmed only after a real enquiry.",
+  ctaPrimary: "Explore trips",
+  ctaSecondary: "Plan your trip",
   heroImage: IMAGES.hero,
 };
 
@@ -23,10 +23,12 @@ export const HOW_IT_WORKS = [
 ];
 
 export const WHY_US = [
-  { title: "Thoughtful itineraries", body: "Days are sequenced from the same package record the desk operates — not a brochure rewritten for the web." },
-  { title: "Personal travel assistance", body: "Enquiries become CRM leads with a follow-up task, so someone on the desk owns the next conversation." },
-  { title: "Local knowledge, carefully coordinated", body: "Season, permit, and road notes appear only after they are published. We do not invent conditions on the website." },
-  { title: "Group and private options", body: "Ask for either format. A departure is listed only when it exists in the catalogue." },
+  { title: "Carefully planned itineraries", body: "Days are sequenced from the same package record the desk operates — not a brochure rewritten for the web.", accent: "sky" },
+  { title: "Personal assistance", body: "Enquiries become CRM leads with a follow-up task, so someone on the desk owns the next conversation.", accent: "coral" },
+  { title: "Experienced travel guidance", body: "The public site and operations desk share one catalogue, so what you read is what the team actually works from.", accent: "navy" },
+  { title: "Group experiences", body: "Ask for a group format. A departure is listed only when it exists in the catalogue.", accent: "green" },
+  { title: "Local destination knowledge", body: "Season, permit, and road notes appear only after they are published. We do not invent conditions on the website.", accent: "sun" },
+  { title: "Customer support", body: "WhatsApp, phone or email follow-up is recorded in the CRM after you send an enquiry.", accent: "sky" },
 ];
 
 export const SIGNATURE = [

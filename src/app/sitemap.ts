@@ -12,6 +12,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "",
     "/destinations",
     "/trips",
+    "/group-trips",
+    "/reviews",
     "/custom-trip",
     "/about",
     "/travel-guides",
@@ -20,6 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/privacy-policy",
     "/terms-and-conditions",
     "/cancellation-policy",
+    "/llms.txt",
   ].map((path) => ({
     url: siteUrl(path || "/"),
     changeFrequency: "weekly" as const,
