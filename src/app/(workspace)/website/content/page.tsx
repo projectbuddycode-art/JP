@@ -20,6 +20,7 @@ export default async function WebsiteContentPage() {
           <input type="hidden" name="page_key" value="home" />
           <div><Label>Hero heading</Label><Input name="heroHeading" defaultValue={content.heroHeading} /></div>
           <div><Label>Hero subheading</Label><Textarea name="heroSubheading" defaultValue={content.heroSubheading} rows={3} /></div>
+          <div><Label>Hero supporting copy</Label><Textarea name="heroSupporting" defaultValue={content.heroSupporting} rows={3} /></div>
           <div className="grid gap-3 md:grid-cols-2">
             <div><Label>Primary CTA</Label><Input name="ctaPrimary" defaultValue={content.ctaPrimary} /></div>
             <div><Label>Secondary CTA</Label><Input name="ctaSecondary" defaultValue={content.ctaSecondary} /></div>

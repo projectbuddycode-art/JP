@@ -1,59 +1,85 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SITE_NAME } from "@/lib/site/defaults";
 
 const NAV = [
   { href: "/destinations", label: "Destinations" },
-  { href: "/trips", label: "Trips" },
-  { href: "/travel-guides", label: "Journal" },
-  { href: "/about", label: "About" },
+  { href: "/trips", label: "Journeys" },
+  { href: "/about", label: "Our story" },
+  { href: "/travel-guides", label: "Travel journal" },
   { href: "/contact", label: "Contact" },
 ];
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 28);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   return (
-    <header className="absolute inset-x-0 top-0 z-40">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <Link href="/" className="font-serif text-2xl tracking-tight text-white">
+    <header className={`site-header ${scrolled ? "is-sticky" : ""}`}>
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+        <Link href="/" className="font-serif text-2xl tracking-tight text-[#f4efe6]">
           {SITE_NAME}
         </Link>
-        <nav className="hidden items-center gap-8 text-sm text-white/80 md:flex">
+        <nav className="hidden items-center gap-8 text-[13px] tracking-[0.04em] text-white/75 md:flex">
           {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:text-white">
+            <Link key={item.href} href={item.href} className="transition hover:text-white">
               {item.label}
             </Link>
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <Link href="/custom-trip" className="hidden text-sm text-white/80 hover:text-white sm:inline">
-            Custom trip
-          </Link>
-          <Link href="/enquire" className="border border-white/40 px-4 py-2 text-sm text-white hover:bg-white hover:text-black">
-            Enquire
+          <Link href="/custom-trip" className="site-btn-gold hidden sm:inline-flex">
+            Plan your trip
           </Link>
           <button
             type="button"
-            className="border border-white/30 px-3 py-2 text-xs uppercase tracking-widest text-white md:hidden"
+            className="border border-white/25 px-3 py-2 text-[11px] uppercase tracking-[0.22em] text-white md:hidden"
             aria-expanded={open}
-            aria-label="Open menu"
+            aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((value) => !value)}
           >
-            Menu
+            {open ? "Close" : "Menu"}
           </button>
         </div>
       </div>
       {open ? (
-        <div className="border-t border-white/10 bg-black/90 px-6 py-4 md:hidden">
-          {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className="block py-2 text-sm text-white" onClick={() => setOpen(false)}>
-              {item.label}
-            </Link>
-          ))}
-          <Link href="/custom-trip" className="block py-2 text-sm text-white" onClick={() => setOpen(false)}>
-            Custom trip
+        <div className="fixed inset-0 z-50 flex flex-col bg-[#07090b] px-8 py-10 md:hidden">
+          <div className="flex items-center justify-between">
+            <span className="font-serif text-2xl">{SITE_NAME}</span>
+            <button type="button" className="text-sm uppercase tracking-[0.2em]" onClick={() => setOpen(false)}>
+              Close
+            </button>
+          </div>
+          <nav className="mt-16 flex flex-col gap-5">
+            {NAV.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="font-serif text-4xl text-[#f4efe6]"
+                onClick={() => setOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <Link href="/custom-trip" className="site-btn-gold mt-auto w-fit" onClick={() => setOpen(false)}>
+            Plan your trip
           </Link>
         </div>
       ) : null}

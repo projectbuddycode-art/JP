@@ -46,7 +46,7 @@ export function EnquiryForm({
       <Field label="Budget range (INR)" name="budget_max" type="number" />
       <div>
         <label className="mb-1 block text-xs uppercase tracking-[0.16em] text-white/50">Trip type</label>
-        <select name="trip_type" defaultValue={tripType ?? ""} className="w-full border border-white/20 bg-transparent px-3 py-2 text-sm text-white">
+        <select name="trip_type" defaultValue={tripType ?? ""} className="site-input">
           <option value="">Not specified</option>
           <option value="private">Private</option>
           <option value="group">Group</option>
@@ -55,7 +55,7 @@ export function EnquiryForm({
       </div>
       <div>
         <label className="mb-1 block text-xs uppercase tracking-[0.16em] text-white/50">Preferred contact</label>
-        <select name="communication_preference" className="w-full border border-white/20 bg-transparent px-3 py-2 text-sm text-white">
+        <select name="communication_preference" className="site-input">
           <option value="whatsapp">WhatsApp</option>
           <option value="phone">Phone</option>
           <option value="email">Email</option>
@@ -64,7 +64,7 @@ export function EnquiryForm({
       <Field label="UTM source" name="utm_source" />
       <div className="md:col-span-2">
         <label className="mb-1 block text-xs uppercase tracking-[0.16em] text-white/50">Requirements</label>
-        <textarea name="notes" rows={4} className="w-full border border-white/20 bg-transparent px-3 py-2 text-sm text-white" />
+        <textarea name="notes" rows={4} className="site-input" />
       </div>
       <label className="md:col-span-2 flex items-start gap-2 text-sm text-white/70">
         <input type="checkbox" name="consent" required className="mt-1 accent-[#c4a574]" />
@@ -74,7 +74,7 @@ export function EnquiryForm({
       <button
         type="submit"
         disabled={pending}
-        className="md:col-span-2 bg-[#c4a574] px-5 py-3 text-sm font-medium text-[#111] disabled:opacity-50"
+        className="site-btn-gold md:col-span-2 disabled:opacity-50"
       >
         {pending ? "Sending…" : "Send enquiry"}
       </button>
@@ -103,7 +103,7 @@ function Field({
         type={type}
         required={required}
         defaultValue={defaultValue}
-        className="w-full border border-white/20 bg-transparent px-3 py-2 text-sm text-white"
+        className="site-input"
       />
     </div>
   );

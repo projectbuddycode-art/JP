@@ -81,7 +81,7 @@ export function createDemoStore(email: string) {
       { id: "l3", contact_id: "c3", stage_id: "s10", owner_id: DEMO_OWNER_ID, full_name: "Priya Nair", phone_e164: "+919833334441", email: "priya.demo@example.com", destination: "Manali", source: "referral", travellers: 6, budget_max: 90000, estimated_value: 87000, currency: "INR", priority: "normal", last_interaction_at: iso(-3), created_at: iso(-20), archived_at: null, is_test: false },
     ],
     packages: [
-      { id: "p1", name: "Spiti Valley Circuit", slug: "spiti-valley-circuit", destination: "Spiti Valley", region: "Himachal Pradesh", short_description: "Kaza, Key Monastery, and Chandratal.", duration_days: 8, price_per_person: 42500, currency: "INR", status: "published", website_status: "published", price_visibility: "starting_from", trip_type: "group", cover_image_url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80", inclusions: "Stay, breakfast, permit assistance", exclusions: "Flights", published_at: iso(-20) },
+      { id: "p1", name: "Spiti Valley Circuit", slug: "spiti-valley-circuit", destination: "Spiti Valley", region: "Himachal Pradesh", short_description: "Kaza, Key Monastery, and Chandratal.", duration_days: 8, price_per_person: 42500, currency: "INR", status: "published", website_status: "published", price_visibility: "starting_from", trip_type: "group", cover_image_url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80", inclusions: "Stay, breakfast, permit assistance", exclusions: "Flights", accommodation: "Hotels and homestays as published for the departure", transport: "Road transfer as listed on the package", published_at: iso(-20), itinerary: [{ day: 1, location: "Manali", title: "Arrive and brief", description: "Meet the travel desk notes for pickup and overnight." }, { day: 2, location: "Kaza", title: "High-valley drive", description: "Pace for acclimatisation on the published route." }, { day: 3, location: "Key Monastery", title: "Monastery road", description: "A monastery visit as listed on the itinerary." }, { day: 4, location: "Chandratal approach", title: "Lake approach", description: "Included when the season note on the package allows." }] },
       { id: "p2", name: "Ladakh Road Trip", slug: "ladakh-road-trip", destination: "Ladakh", short_description: "Leh, Nubra, Pangong with acclimatisation.", duration_days: 9, price_per_person: 48900, currency: "INR", status: "published", website_status: "published", price_visibility: "starting_from", trip_type: "private", cover_image_url: "https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?auto=format&fit=crop&w=1600&q=80", published_at: iso(-18) },
       { id: "p3", name: "Manali Weekend Escape", slug: "manali-weekend-escape", destination: "Manali", short_description: "Solang and Old Manali weekend.", duration_days: 3, price_per_person: 14500, currency: "INR", status: "published", website_status: "published", price_visibility: "starting_from", trip_type: "group", cover_image_url: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1600&q=80", published_at: iso(-10) },
       { id: "p4", name: "Unpublished draft circuit", slug: "unpublished-draft-circuit", destination: "Spiti Valley", short_description: "Internal draft.", duration_days: 7, price_per_person: 99999, currency: "INR", status: "draft", website_status: "draft" },
@@ -231,10 +231,12 @@ export function createDemoStore(email: string) {
         seo_title: "Northridge — Himalayan journeys",
         seo_description: "Published itineraries for Spiti, Manali, and Ladakh.",
         content: {
-          heroHeading: "Beyond the Ordinary. Into the Himalayas.",
-          heroSubheading: "Discover thoughtfully planned journeys through the mountains, from the landscapes of Spiti Valley to the high roads of Ladakh.",
-          ctaPrimary: "Explore Trips",
-          ctaSecondary: "Plan Your Journey",
+          heroHeading: "THE HIMALAYAS ARE CALLING.",
+          heroSubheading: "Journeys beyond the ordinary. Experiences that stay with you.",
+          heroSupporting:
+            "Discover extraordinary journeys through Spiti, Ladakh and the mountains of Himachal — thoughtfully planned, personally guided and built around the way you love to travel.",
+          ctaPrimary: "Explore journeys",
+          ctaSecondary: "Design your journey",
         },
       },
     ],

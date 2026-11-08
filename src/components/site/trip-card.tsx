@@ -2,39 +2,45 @@ import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 import type { PublicPackage } from "@/lib/site/types";
 import { publicPackageDto } from "@/lib/site/visibility";
-import { DESTINATION_COVERS } from "@/lib/site/defaults";
+import { coverForDestination } from "@/lib/site/media";
 
-function slugFromDestination(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+export function tripPriceLabel(pack: PublicPackage) {
+  const dto = publicPackageDto(pack);
+  if (dto.price_visibility === "request_quote" || dto.price_visibility === "contact" || dto.price_per_person == null) {
+    return "Price on request";
+  }
+  return dto.price_visibility === "fixed"
+    ? formatCurrency(dto.price_per_person, dto.currency)
+    : `From ${formatCurrency(dto.price_per_person, dto.currency)}`;
 }
 
-export function TripCard({ pack }: { pack: PublicPackage }) {
+export function TripCard({ pack, featured = false }: { pack: PublicPackage; featured?: boolean }) {
   const dto = publicPackageDto(pack);
-  const image =
-    dto.cover_image_url ||
-    DESTINATION_COVERS[slugFromDestination(pack.destination)] ||
-    DESTINATION_COVERS["spiti-valley"];
-  const priceLabel =
-    dto.price_visibility === "request_quote" || dto.price_visibility === "contact" || dto.price_per_person == null
-      ? "Request a quote"
-      : dto.price_visibility === "fixed"
-        ? formatCurrency(dto.price_per_person, dto.currency)
-        : `From ${formatCurrency(dto.price_per_person, dto.currency)}`;
+  const image = dto.cover_image_url || coverForDestination(pack.destination);
+  const priceLabel = tripPriceLabel(pack);
   return (
-    <article className="group overflow-hidden border border-white/10 bg-[#14181d]">
-      <Link href={`/trips/${pack.slug}`} className="block">
+    <article className={`group relative overflow-hidden ${featured ? "min-h-[540px]" : "min-h-[420px]"}`}>
+      <Link href={`/trips/${pack.slug}`} className="absolute inset-0">
         <div
-          className="h-64 bg-cover bg-center transition duration-700 group-hover:scale-[1.03]"
+          className="absolute inset-0 bg-cover bg-center transition duration-700 ease-out group-hover:scale-[1.06]"
           style={{ backgroundImage: `url(${image})` }}
         />
-        <div className="p-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#c4a574]">{pack.destination}</p>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
+        <div className="relative flex h-full min-h-[inherit] flex-col justify-end p-7">
+          <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.22em] text-[#c4a574]">
+            <span>{pack.destination}</span>
+            {pack.trip_type ? <span>· {pack.trip_type}</span> : null}
+          </div>
           <h3 className="mt-2 font-serif text-3xl text-[#f4efe6]">{pack.name}</h3>
-          <p className="mt-3 text-sm text-white/60">{pack.short_description}</p>
+          {pack.short_description ? <p className="mt-2 line-clamp-2 text-sm text-white/70">{pack.short_description}</p> : null}
           <p className="mt-4 text-sm text-white/80">
-            {pack.duration_days ? `${pack.duration_days} days` : "Duration on request"} · {priceLabel}
+            {pack.duration_days ? `${pack.duration_days} days` : "Duration on request"}
+            {pack.departure_points ? ` · ${pack.departure_points}` : ""}
+            {` · ${priceLabel}`}
           </p>
-          <span className="mt-4 inline-block text-sm text-[#c4a574]">View itinerary</span>
+          <span className="mt-4 inline-flex text-sm text-[#c4a574]">
+            {pack.trip_type === "custom" ? "Enquire" : "View journey"}
+          </span>
         </div>
       </Link>
     </article>

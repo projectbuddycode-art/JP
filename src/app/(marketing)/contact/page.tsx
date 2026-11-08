@@ -13,7 +13,8 @@ export default function ContactPage() {
   const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
   return (
     <main className="mx-auto max-w-3xl px-6 pb-24 pt-36">
-      <h1 className="font-serif text-5xl">Talk to the travel team</h1>
+      <p className="text-[11px] uppercase tracking-[0.32em] text-[#c4a574]">Contact</p>
+      <h1 className="mt-4 font-serif text-5xl md:text-6xl">Talk to the travel team</h1>
       <p className="mt-4 text-white/65">
         Use this form so the enquiry is stored, assigned, and followed up. WhatsApp is shown only when a number is configured for the workspace.
       </p>

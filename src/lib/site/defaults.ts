@@ -1,23 +1,18 @@
+import { DESTINATION_COVERS, IMAGES } from "@/lib/site/media";
+
 export const SITE_NAME = "Northridge";
 
 export const DEFAULT_HOME = {
-  heroHeading: "Beyond the Ordinary. Into the Himalayas.",
-  heroSubheading:
-    "Discover thoughtfully planned journeys through the mountains, from the landscapes of Spiti Valley to the high roads of Ladakh.",
-  ctaPrimary: "Explore Trips",
-  ctaSecondary: "Plan Your Journey",
-  heroImage:
-    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=80",
+  heroHeading: "THE HIMALAYAS ARE CALLING.",
+  heroSubheading: "Journeys beyond the ordinary. Experiences that stay with you.",
+  heroSupporting:
+    "Discover extraordinary journeys through Spiti, Ladakh and the mountains of Himachal — thoughtfully planned, personally guided and built around the way you love to travel.",
+  ctaPrimary: "Explore journeys",
+  ctaSecondary: "Design your journey",
+  heroImage: IMAGES.hero,
 };
 
-export const DESTINATION_COVERS: Record<string, string> = {
-  "spiti-valley":
-    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80",
-  manali:
-    "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1600&q=80",
-  ladakh:
-    "https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?auto=format&fit=crop&w=1600&q=80",
-};
+export { DESTINATION_COVERS, IMAGES };
 
 export const HOW_IT_WORKS = [
   { step: "01", title: "Choose a destination", body: "Start with Spiti, Manali, Ladakh, or a custom Himalayan brief." },
@@ -28,10 +23,10 @@ export const HOW_IT_WORKS = [
 ];
 
 export const WHY_US = [
-  { title: "One itinerary source", body: "Trips published here are the same packages managed in the travel desk." },
-  { title: "Personal follow-up", body: "Enquiries become CRM leads with a follow-up task, not an unattended inbox." },
-  { title: "Group and private options", body: "Ask for either format. We do not list a departure unless it is actually scheduled." },
-  { title: "Clear next steps", body: "Inclusions, exclusions, and open questions stay visible. Permits and roads are confirmed in conversation." },
+  { title: "Thoughtful itineraries", body: "Days are sequenced from the same package record the desk operates — not a brochure rewritten for the web." },
+  { title: "Personal travel assistance", body: "Enquiries become CRM leads with a follow-up task, so someone on the desk owns the next conversation." },
+  { title: "Local knowledge, carefully coordinated", body: "Season, permit, and road notes appear only after they are published. We do not invent conditions on the website." },
+  { title: "Group and private options", body: "Ask for either format. A departure is listed only when it exists in the catalogue." },
 ];
 
 export const SIGNATURE = [

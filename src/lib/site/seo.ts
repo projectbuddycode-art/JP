@@ -14,14 +14,15 @@ export function pageMetadata(input: {
   index?: boolean;
 }) {
   const url = siteUrl(input.path);
-  const title = input.title.includes(SITE_NAME) ? input.title : `${input.title} · ${SITE_NAME}`;
+  const title = input.title;
+  const branded = input.title.includes(SITE_NAME) ? input.title : `${input.title} · ${SITE_NAME}`;
   return {
     title,
     description: input.description,
     alternates: { canonical: url },
     robots: input.index === false ? { index: false, follow: false } : { index: true, follow: true },
     openGraph: {
-      title,
+      title: branded,
       description: input.description,
       url,
       siteName: SITE_NAME,
@@ -30,7 +31,7 @@ export function pageMetadata(input: {
     },
     twitter: {
       card: "summary_large_image" as const,
-      title,
+      title: branded,
       description: input.description,
     },
   };

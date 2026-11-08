@@ -12,6 +12,7 @@ export async function saveWebsitePageAction(formData: FormData) {
   const content = {
     heroHeading: String(formData.get("heroHeading") || ""),
     heroSubheading: String(formData.get("heroSubheading") || ""),
+    heroSupporting: String(formData.get("heroSupporting") || ""),
     ctaPrimary: String(formData.get("ctaPrimary") || ""),
     ctaSecondary: String(formData.get("ctaSecondary") || ""),
     body: String(formData.get("body") || ""),
