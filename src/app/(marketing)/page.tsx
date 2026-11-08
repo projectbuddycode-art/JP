@@ -59,11 +59,20 @@ export default async function HomePage() {
   const content = { ...DEFAULT_HOME, ...((page?.content ?? {}) as Record<string, string>) };
   const destRows = destinations.length ? destinations : FALLBACK_DESTINATIONS;
   const gallery = [
-    ...DESTINATION_PROFILES["spiti-valley"].gallery.map((src) => ({ src, category: "spiti", alt: "Spiti" })),
-    ...DESTINATION_PROFILES.ladakh.gallery.map((src) => ({ src, category: "ladakh", alt: "Ladakh" })),
-    ...DESTINATION_PROFILES.manali.gallery.map((src) => ({ src, category: "manali", alt: "Manali" })),
-    { src: IMAGES.roads, category: "road", alt: "Road trip" },
-    { src: IMAGES.village, category: "group", alt: "Group travel" },
+    { src: IMAGES.spiti, category: "spiti", alt: "Spiti" },
+    { src: IMAGES.spitiPeaks, category: "spiti", alt: "Spiti peaks" },
+    { src: IMAGES.chandratal, category: "spiti", alt: "High-altitude lake" },
+    { src: IMAGES.monastery, category: "spiti", alt: "Monastery" },
+    { src: IMAGES.ladakh, category: "ladakh", alt: "Ladakh" },
+    { src: IMAGES.lake, category: "ladakh", alt: "Ladakh lake" },
+    { src: IMAGES.snowridge, category: "ladakh", alt: "High ridge" },
+    { src: IMAGES.manali, category: "manali", alt: "Manali" },
+    { src: IMAGES.pines, category: "manali", alt: "Himachal pines" },
+    { src: IMAGES.village, category: "group", alt: "Village stay" },
+    { src: IMAGES.dusk, category: "group", alt: "Group landscape" },
+    { src: IMAGES.roads, category: "road", alt: "Mountain road" },
+    { src: IMAGES.peaks, category: "road", alt: "High pass" },
+    { src: IMAGES.pass, category: "road", alt: "Road journey" },
   ];
 
   return (

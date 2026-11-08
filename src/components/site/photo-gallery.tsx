@@ -10,7 +10,7 @@ export function PhotoGallery({ images, label }: { images: string[]; label: strin
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         {images.map((image, index) => (
           <button
-            key={image}
+            key={`${image}-${index}`}
             type="button"
             className={`group relative min-h-[180px] overflow-hidden rounded-3xl md:min-h-[240px] ${index === 0 ? "col-span-2 md:min-h-[420px]" : ""}`}
             onClick={() => setOpen(image)}

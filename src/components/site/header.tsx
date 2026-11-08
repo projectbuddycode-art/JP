@@ -40,7 +40,7 @@ export function SiteHeader() {
             <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-[#2f9ed8]">Spiti · Ladakh · Manali</span>
           </span>
         </Link>
-        <nav className="hidden items-center gap-5 text-[13px] font-medium text-[#5d6d7a] xl:flex">
+        <nav className="hidden items-center gap-5 text-[13px] font-medium text-[#5d6d7a] lg:flex">
           {NAV.map((item) => (
             <Link key={item.href} href={item.href} className="transition hover:text-[#12324d]">
               {item.label}
@@ -58,7 +58,7 @@ export function SiteHeader() {
           </Link>
           <button
             type="button"
-            className="rounded-full border border-[#dce7ef] px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#12324d] xl:hidden"
+            className="rounded-full border border-[#dce7ef] px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#12324d] lg:hidden"
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((value) => !value)}
@@ -68,7 +68,7 @@ export function SiteHeader() {
         </div>
       </div>
       {open ? (
-        <div className="fixed inset-0 z-50 flex flex-col bg-white px-8 py-8 xl:hidden">
+        <div className="fixed inset-0 z-50 flex flex-col bg-white px-8 py-8 lg:hidden">
           <div className="flex items-center justify-between">
             <span className="font-serif text-2xl">{SITE_NAME}</span>
             <button type="button" className="text-sm font-semibold uppercase tracking-[0.16em]" onClick={() => setOpen(false)}>

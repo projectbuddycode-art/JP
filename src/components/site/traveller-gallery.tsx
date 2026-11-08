@@ -18,10 +18,15 @@ export function TravellerGallery({
   items: Array<{ src: string; category: string; alt: string }>;
 }) {
   const [filter, setFilter] = useState<(typeof CATEGORIES)[number]["id"]>("all");
-  const rows = useMemo(
-    () => items.filter((item) => filter === "all" || item.category === filter),
-    [items, filter],
-  );
+  const rows = useMemo(() => {
+    const filtered = items.filter((item) => filter === "all" || item.category === filter);
+    const seen = new Set<string>();
+    return filtered.filter((item) => {
+      if (seen.has(item.src)) return false;
+      seen.add(item.src);
+      return true;
+    });
+  }, [items, filter]);
   if (!items.length) return null;
   return (
     <div>

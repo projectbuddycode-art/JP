@@ -32,6 +32,7 @@ export function CinematicHero({
 }) {
   const [mobile, setMobile] = useState(false);
   const [reduce, setReduce] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const narrow = window.matchMedia("(max-width: 768px)");
@@ -41,6 +42,7 @@ export function CinematicHero({
       setReduce(motion.matches);
     };
     sync();
+    setMounted(true);
     narrow.addEventListener("change", sync);
     motion.addEventListener("change", sync);
     return () => {
@@ -82,7 +84,7 @@ export function CinematicHero({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={image} alt="Himalayan landscape" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 mix-blend-soft-light opacity-70">
-            {reduce ? (
+            {!mounted || reduce ? (
               <div className="ghost-fibers-fallback absolute inset-0" />
             ) : (
               <GhostFibers
